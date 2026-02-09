@@ -203,7 +203,6 @@ const EditableCell: React.FC<React.PropsWithChildren<EditableCellProps>> = ({
         }
     };
 
-    let childNode = children;
 
     if (editable) {
         return <Button variant={
@@ -213,7 +212,7 @@ const EditableCell: React.FC<React.PropsWithChildren<EditableCellProps>> = ({
         }} className='w-full' color="pink"></Button>;
     }
 
-    return <td {...restProps}>{childNode}</td>;
+    return <td {...restProps}>{children}</td>;
 };
 
 export const KhungGioComponent = () => {

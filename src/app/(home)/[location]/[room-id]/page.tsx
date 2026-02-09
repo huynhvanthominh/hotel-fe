@@ -227,7 +227,7 @@ export default function RoomDetail() {
               </Checkbox>
             </div>
             <div>
-              Khi bấm 'Đặt phòng' đồng nghĩa với việc bạn đã đọc và đồng ý với các Nội quy & Chính sách của LocalHome
+              Khi bấm &apos;Đặt phòng&apos; đồng nghĩa với việc bạn đã đọc và đồng ý với các Nội quy & Chính sách của LocalHome
             </ div>
             <div>
               *Chú ý:
@@ -236,7 +236,7 @@ export default function RoomDetail() {
 
               </p>
               <p>
-                - Đây là hệ thống đặt phòng tự động, nên khi bấm 'Đặt phòng' bạn sẽ được chuyển sang quét mã QR để thanh toán qua App ngân hàng, thời gian giữ phòng là 5 phút chờ thanh toán.
+                - Đây là hệ thống đặt phòng tự động, nên khi bấm &apos;Đặt phòng&apos; bạn sẽ được chuyển sang quét mã QR để thanh toán qua App ngân hàng, thời gian giữ phòng là 5 phút chờ thanh toán.
               </p>
             </div>
           </div>

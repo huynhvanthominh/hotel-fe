@@ -1,13 +1,18 @@
 import { IRoomImage } from "../room-image";
 
-export enum ROOM_PRICE_TYPE_ENUM{
+export enum ROOM_PRICE_TYPE_ENUM {
   QUA_DEM = 'Đêm',
   BA_GIO = '3h'
 }
 
-interface IRoomPrice{
-  price: number;
+interface IRoomPrice {
+  price: string;
   type: ROOM_PRICE_TYPE_ENUM
+}
+
+interface IAmenity {
+  name: string,
+  iconUrl: string
 }
 
 export interface IRoom {
@@ -17,5 +22,6 @@ export interface IRoom {
   description: string;
   officeId: string;
   images: IRoomImage[];
-  prices: IRoomPrice[]
+  prices: IRoomPrice[];
+  amenities: IAmenity[];
 }

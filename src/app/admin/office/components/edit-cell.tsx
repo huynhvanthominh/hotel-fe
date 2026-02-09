@@ -56,7 +56,7 @@ export const EditableCell = <T,>({
     childNode = editing ? (
       <Form.Item
         style={{ margin: 0 }}
-        name={dataIndex}
+        name={dataIndex as any}
         rules={[{ required: required, message: `${title} is required.` }]}
       >
         <Input ref={inputRef} onPressEnter={save} onBlur={save} />

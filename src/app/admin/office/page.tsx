@@ -18,10 +18,10 @@ export default function OfficePage() {
 
 const [isChange, setIsChange] = useState(false);
 
-  const handleDelete = (key: React.Key) => {
-    const newData = dataSource.filter((item) => item.key !== key);
-    setDataSource(newData);
-  };
+  // const handleDelete = (key: React.Key) => {
+  //   const newData = dataSource.filter((item) => item.key !== key);
+  //   setDataSource(newData);
+  // };
 
   const defaultColumns = useColumn();
   const handleAdd = () => {
@@ -32,7 +32,8 @@ const [isChange, setIsChange] = useState(false);
       description: '',
       phone: '',
       email: '',
-      status: STATUS_ENUM.ACTIVE
+      status: STATUS_ENUM.ACTIVE,
+      imageUrl: '',
     };
     setDataSource([...dataSource, newData]);
     setIsChange(true)

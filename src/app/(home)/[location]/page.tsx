@@ -1,12 +1,17 @@
-import { Avatar, Button, Card, Carousel } from "antd"
+ 'use client'
+ import { Avatar, Button, Card, Carousel } from "antd"
 import { officeList } from "../conts/office-list"
 import { roomListData } from "../conts/room-list"
 import { type IRoom } from "@/models/room"
+import { useParams, useRouter } from "next/navigation"
 interface ICardItemProps {
   item: IRoom
 }
 const CardItem = (props: ICardItemProps) => {
   const { item } = props;
+  const router = useRouter();
+  const {location} = useParams();
+  console.log('location', location);
   return (
     <Card
       hoverable
@@ -55,7 +60,7 @@ const CardItem = (props: ICardItemProps) => {
             </div>
           </div>
           <div className="flex flex-1 items-end justify-end">
-            <Button variant="solid" color="pink">Đặt phòng</Button>
+            <Button variant="solid" color="pink" onClick={() => router.push(`/${location}/${item.id}`)}>Đặt phòng</Button>
           </div>
         </div>
 

@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "DEBUG=next:rewrites && next dev",
+    "dev": "  next dev --port=3001",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
@@ -16,10 +16,12 @@
     "@visactor/react-vchart": "^1.12.10",
     "@visactor/vchart": "^1.12.10",
     "antd": "^6.2.3",
+    "antd-style": "^4.1.0",
     "axios": "^1.13.4",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "date-fns": "^3.6.0",
+    "dayjs": "^1.11.19",
     "jotai": "^2.10.1",
     "lucide-react": "^0.436.0",
     "next": "15.0.6",

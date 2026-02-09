@@ -126,7 +126,7 @@ export default function UserLayout({
             <Container>{children}</Container>
           </Content>
           <div className="flex justify-center" style={footerStyle}>
-            <div className="flex flex-col md:w-7/12 w-full" style={{
+            <div className="flex flex-col md:w-7/12 w-full " style={{
             }}>
               <div>
                 <div className="flex md:flex-row flex-col justify-around">
@@ -175,7 +175,7 @@ export default function UserLayout({
 
               </div>
               <div>
-                <div>
+                <div className="md:px-0 px-4">
                   Hộ kinh doanh LOCAL HOME / Địa chỉ: Số B.07, chung cư Cadif - HP1, Hưng Phú, Q. Cái Răng, TP. Cần Thơ / Mã số hộ kinh doanh 8340125748-002 do Phòng Tài Chính - Kế Hoạch Quận Cái Răng cấp lần đầu ngày 13/11/2024. Chịu trách nhiệm nội dung: Trần Kim Tài
                 </div>
               </div>

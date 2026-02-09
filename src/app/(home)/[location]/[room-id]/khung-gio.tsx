@@ -36,7 +36,7 @@ const ItemRender = () => {
 const defaultColumns: ((ColumnGroupType<DataType> | ColumnType<DataType>) & { editable?: boolean; dataIndex?: string })[] = [
     {
         title: 'Tên phòng',
-
+        fixed: 'start',
         children: [
             {
                 title: 'Thứ',
@@ -257,10 +257,11 @@ export const KhungGioComponent = () => {
     return (
         <Table<DataType>
             pagination={false}
+            className='text-xs'
             columns={columns as any}
             dataSource={dataSource}
             bordered
-            size="middle"
+            size="small"
             scroll={{ y: 47 * 5 }}
             components={components}
             rowClassName={() => 'editable-row'}

@@ -1,5 +1,5 @@
- 'use client'
- import { Avatar, Button, Card, Carousel } from "antd"
+'use client'
+import { Avatar, Button, Card, Carousel } from "antd"
 import { officeList } from "../conts/office-list"
 import { roomListData } from "../conts/room-list"
 import { type IRoom } from "@/models/room"
@@ -10,8 +10,8 @@ interface ICardItemProps {
 const CardItem = (props: ICardItemProps) => {
   const { item } = props;
   const router = useRouter();
-  const {location} = useParams();
-  console.log('location', location);
+  const { location } = useParams();
+
   return (
     <Card
       hoverable
@@ -81,7 +81,7 @@ export default function LocationPage() {
             Điểm đến của bạn
           </h1>
         </div>
-        <div className="flex justify-around">
+        <div className="flex justify-around flex-wrap gap-4">
           {
             officeList.map((item) => {
               return (
@@ -109,9 +109,15 @@ export default function LocationPage() {
               roomListData.map((item, index) => {
                 return (
                   <div key={item.id} className="!flex justify-around gap-8">
-                    <CardItem item={item} />
-                    <CardItem item={item} />
-                    <CardItem item={item} />
+                    <div>
+                      <CardItem item={item} />
+                    </div>
+                    <div className="md:block hidden">
+                      <CardItem item={item} />
+                    </div>
+                    <div className="md:block hidden">
+                      <CardItem item={item} />
+                    </div>
                   </div>
                 )
               })

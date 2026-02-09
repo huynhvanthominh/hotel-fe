@@ -1,7 +1,9 @@
 'use client'
 import Container from "@/components/container";
-import { Grid, Layout } from "antd";
+import { Button, Drawer, Grid, Layout } from "antd";
+import { MenuOutlined } from "@ant-design/icons";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 const { Header, Footer, Sider, Content } = Layout;
 const mainColor = '#E0b0FF'
@@ -32,6 +34,39 @@ const footerStyle: React.CSSProperties = {
   backgroundColor: mainColor,
 };
 
+const NavMenuMobile = () => {
+  return (
+    <div>
+      <div>
+        Tra cứu booking
+      </div>
+      <div>
+        Nhường quyền
+      </div>
+      <div>
+        Liên hệ
+      </div>
+    </div>
+  )
+}
+
+
+const NavMenu = () => {
+
+  return (
+    <>
+      <div>
+        Tra cứu booking
+      </div>
+      <div>
+        Nhường quyền
+      </div>
+      <div>
+        Liên hệ
+      </div>
+    </>
+  )
+}
 
 
 export default function UserLayout({
@@ -41,6 +76,17 @@ export default function UserLayout({
 }) {
 
   const router = useRouter();
+
+  const [open, setOpen] = useState(false);
+
+  const showDrawer = () => {
+    setOpen(true);
+  };
+
+  const onClose = () => {
+    setOpen(false);
+  };
+
   return (
     <>
       <main className="h-full " style={{
@@ -48,8 +94,8 @@ export default function UserLayout({
         height: '100vh'
       }}>
         <Layout className="overflow-hidden w-full max-w-full gap-4">
-          <div className="flex justify-center align-middle" style={headerStyle}>
-            <div className="flex w-7/12" style={{
+          <div className="flex md:justify-center md:items-center md:px-0 px-4" style={headerStyle}>
+            <div className="flex md:w-7/12 w-full" style={{
             }}>
               <div className="flex">
                 <div className="p-2 cursor-pointer" onClick={() => {
@@ -59,28 +105,32 @@ export default function UserLayout({
                 </div>
               </div>
             </div>
-            <div className="flex text-2xl items-center gap-4">
-              <div>
-                Tra cứu booking
-              </div>
-              <div>
-                Nhường quyền
-              </div>
-              <div>
-                Liên hệ
-              </div>
-
+            <div className="md:hidden flex items-center">
+              <Button icon={<MenuOutlined />} onClick={showDrawer} />
+              <Drawer
+                title={<div>
+                  0901 220 012 - 0907 273 571
+                </div>}
+                closable={{ 'aria-label': 'Close Button' }}
+                onClose={onClose}
+                open={open}
+              >
+                <NavMenuMobile />
+              </Drawer>
+            </div>
+            <div className="md:flex hidden text-2xl items-center gap-4">
+              <NavMenu />
             </div>
           </div>
-          <Content className="w-8/12 mx-auto">
+          <Content className="md:w-8/12 w-full mx-auto">
             <Container>{children}</Container>
           </Content>
           <div className="flex justify-center" style={footerStyle}>
-            <div className="flex flex-col w-7/12" style={{
+            <div className="flex flex-col md:w-7/12 w-full" style={{
             }}>
               <div>
-                <div className="flex justify-around">
-                  <div className="flex flex-col ">
+                <div className="flex md:flex-row flex-col justify-around">
+                  <div className="flex flex-col">
                     <div className="p-2 flex justify-center">
                       <img src="/taga-home-icon.png" alt="" className="" width={256} />
                     </div>
@@ -96,8 +146,8 @@ export default function UserLayout({
                       </ul>
                     </div>
                   </div>
-                  <div className="flex">
-                    <div className="p-2">
+                  <div className="flex justify-center">
+                    <div className="p-2 md:block flex flex-col justify-center">
                       Chính sách
                       <ul className="flex flex-col justify-start">
                         <li>

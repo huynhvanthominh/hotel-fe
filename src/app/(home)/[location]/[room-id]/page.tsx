@@ -144,6 +144,7 @@ export default function RoomDetail() {
 
     if (!payload.totalPrice) {
       message.error('Vui lòng chọn phòng và khung giờ');
+      return;
     }
 
     payload.roomId = roomId as string;

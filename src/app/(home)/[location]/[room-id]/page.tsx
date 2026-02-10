@@ -68,8 +68,8 @@ export default function RoomDetail() {
   } as ICreateBookingRequest);
 
   // Calculate extra guest charge: 50,000 VND per guest over 2
-  const extraGuestCharge = payload.personCount && payload.personCount > 2 
-    ? (payload.personCount - 2) * 50000 
+  const extraGuestCharge = payload.personCount && payload.personCount > 2
+    ? (payload.personCount - 2) * 50000
     : 0;
 
   // hast abc-xyz to bsae64
@@ -156,7 +156,7 @@ export default function RoomDetail() {
       message.error('Vui lòng chọn phòng và khung giờ');
       return;
     }
-    
+
     const finalPayload = {
       ...payload,
       roomId: roomId as string,
@@ -166,7 +166,7 @@ export default function RoomDetail() {
 
     bookingApi.create(finalPayload).then((res) => {
       setBookingId(res.id);
-      
+
       // Save booking ID to localStorage for tracking
       const existingBookings = localStorage.getItem('bookings');
       const bookingIds = existingBookings ? JSON.parse(existingBookings) : [];
@@ -320,7 +320,7 @@ export default function RoomDetail() {
             }} />
           </div>
           <div>
-            <DichVuComponent 
+            <DichVuComponent
               onServiceChange={(services) => {
                 setSelectedServices(services);
                 const total = services.reduce((sum, s) => sum + s.price, 0);
@@ -369,31 +369,35 @@ export default function RoomDetail() {
             <div className="flex flex-col gap-4">
               <div>Căn cước công dân</div>
               <div className="flex justify-around gap-4">
-                <UploadCustom
-                  onChange={(rs) => {
-                    setImageUrl1(getUrlFromFileId(rs.id));
-                    setPayload({ ...payload, cccdFrontImageId: rs.id });
-                  }}
-                >
-                  {imageUrl1 ? (
-                    <img draggable={false} src={imageUrl1} alt="avatar" style={{ width: '100%' }} />
-                  ) : (
-                    uploadButton1
-                  )}
-                </UploadCustom>
+                <div className="max-w-1/2">
+                  <UploadCustom
+                    onChange={(rs) => {
+                      setImageUrl1(getUrlFromFileId(rs.id));
+                      setPayload({ ...payload, cccdFrontImageId: rs.id });
+                    }}
+                  >
+                    {imageUrl1 ? (
+                      <img draggable={false} src={imageUrl1} alt="avatar" style={{ width: '90%' }} />
+                    ) : (
+                      uploadButton1
+                    )}
+                  </UploadCustom>
 
-                <UploadCustom
-                  onChange={(rs) => {
-                    setImageUrl2(getUrlFromFileId(rs.id));
-                    setPayload({ ...payload, cccdBackImageId: rs.id });
-                  }}
-                >
-                  {imageUrl2 ? (
-                    <img draggable={false} src={imageUrl2} alt="avatar" style={{ width: '100%' }} />
-                  ) : (
-                    uploadButton2
-                  )}
-                </UploadCustom>
+                </div>
+                <div className="max-w-1/2">
+                  <UploadCustom
+                    onChange={(rs) => {
+                      setImageUrl2(getUrlFromFileId(rs.id));
+                      setPayload({ ...payload, cccdBackImageId: rs.id });
+                    }}
+                  >
+                    {imageUrl2 ? (
+                      <img draggable={false} src={imageUrl2} alt="avatar" style={{ width: '90%' }} />
+                    ) : (
+                      uploadButton2
+                    )}
+                  </UploadCustom>
+                </div>
               </div>
               <p>
                 * Để tránh bị ảnh hưởng khi qua đêm tại Home do cơ quan chức năng đến kiểm tra bất ngờ, nếu khai báo lưu trú thiếu thông tin của khách đi cùng nên khách book có khung giờ qua đêm, Home sẽ cần thêm thông tin CCCD của người đi cùng.
@@ -426,7 +430,7 @@ export default function RoomDetail() {
                 </Checkbox>
               </div>
               <div>
-                Khi bấm &apos;Đặt phòng&apos; đồng nghĩa với việc bạn đã đọc và đồng ý với các Nội quy & Chính sách của LocalHome
+                Khi bấm &apos;Đặt phòng&apos; đồng nghĩa với việc bạn đã đọc và đồng ý với các Nội quy & Chính sách của TagaHome
               </ div>
               <div>
                 *Chú ý:
@@ -452,7 +456,7 @@ export default function RoomDetail() {
                     {payload.totalPrice.toLocaleString('vi-VN')}đ
                   </span>
                 </div>
-                
+
                 {serviceTotalPrice > 0 && (
                   <div className="flex justify-between items-center">
                     <span className="text-gray-700">Tổng tiền dịch vụ:</span>
@@ -461,7 +465,7 @@ export default function RoomDetail() {
                     </span>
                   </div>
                 )}
-                
+
                 {extraGuestCharge > 0 && (
                   <div className="flex justify-between items-center">
                     <span className="text-gray-700">Phụ thu khách ({payload.personCount! - 2} khách):</span>
@@ -470,7 +474,7 @@ export default function RoomDetail() {
                     </span>
                   </div>
                 )}
-                
+
                 <div className="border-t-2 border-pink-200 pt-2 mt-2">
                   <div className="flex justify-between items-center">
                     <span className="text-lg font-bold text-gray-800">Tổng cộng:</span>

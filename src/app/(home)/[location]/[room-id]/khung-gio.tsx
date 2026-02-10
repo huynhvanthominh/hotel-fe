@@ -69,13 +69,13 @@ const defaultColumns: any = (room: IRoom, data: any, save: (data: any) => void, 
         title: 'Thứ',
         dataIndex: 'thu',
         key: 'thu',
-        width: 80
+        width: 50
       },
       {
         title: 'Ngày',
         dataIndex: 'ngay',
         key: 'ngay',
-        width: 100
+        width: 95
       },
     ],
   },

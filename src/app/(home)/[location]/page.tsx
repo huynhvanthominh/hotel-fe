@@ -186,7 +186,7 @@ const TraCuu = () => {
 
     if (socket && isConnected) {
       // Emit to server that we're waiting for this booking's payment
-      socket.emit(WS_EVENTS.REGISTER_BOOKING, { bookingId: data.id });
+      socket.emit(WS_EVENTS.SUBSCRIBE_BOOKING, { bookingId: data.id });
       on(WS_EVENTS.PAYMENT_CONFIRMED, handlePaymentConfirmed);
 
       return () => {

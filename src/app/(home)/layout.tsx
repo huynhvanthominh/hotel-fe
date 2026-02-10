@@ -94,7 +94,7 @@ export default function UserLayout({
                 <div className="p-2 cursor-pointer" onClick={() => {
                   router.push("/")
                 }}>
-                  <Image src="/taga-home-icon.png" width={300} height={80} alt="" className="max-w-full max-h-full" />
+                  <Image src="/taga-home-icon.png" width={80} height={80} alt=""  />
                 </div>
               </div>
             </div>
@@ -169,11 +169,9 @@ export default function UserLayout({
               </div>
               <div>
                 <div className="md:px-0 px-4">
-                  Hộ kinh doanh LOCAL HOME / Địa chỉ: Số B.07, chung cư Cadif - HP1, Hưng Phú, Q. Cái Răng, TP. Cần Thơ / Mã số hộ kinh doanh 8340125748-002 do Phòng Tài Chính - Kế Hoạch Quận Cái Răng cấp lần đầu ngày 13/11/2024. Chịu trách nhiệm nội dung: Trần Kim Tài
+                  Hộ kinh doanh TagaHome 85 Mậu Thân, Ninh Kiều, Thành Phố Cần Thơ
                 </div>
               </div>
-
-
 
             </div>
           </div>

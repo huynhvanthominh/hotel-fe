@@ -1,5 +1,5 @@
 'use client';
-import { Button, Carousel, Checkbox, Form, type GetProp, type GetRef, Input, Modal, Select, type UploadProps, message } from "antd";
+import { Button, Carousel, Checkbox, Form, type GetProp, type GetRef, Image, Input, Modal, Select, type UploadProps, message } from "antd";
 import { roomListData } from "../../conts/room-list";
 import { KhungGioComponent } from "./khung-gio";
 import { DichVuComponent } from "./dich-vu";
@@ -255,8 +255,8 @@ export default function RoomDetail() {
               {
                 room?.images.map((item) => {
                   return (
-                    <div key={item.id} >
-                      <img src={getUrlFromFileId(item.imageId)} alt="room image" className="w-full object-cover" />
+                    <div key={item.id} className="!flex justify-center items-center bg-black">
+                      <Image src={getUrlFromFileId(item.imageId)} width={240} height={480} alt="room image" className="w-full object-cover" />
                     </div>
                   )
                 })
@@ -431,7 +431,7 @@ export default function RoomDetail() {
               <div>
                 *Chú ý:
                 <p>
-                  - Bạn đang đặt phòng tại: Home - Hồng Phát 2, Cần Thơ.
+                  {/* - Bạn đang đặt phòng tại: Home - Hồng Phát 2, Cần Thơ. */}
 
                 </p>
                 <p>

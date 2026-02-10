@@ -60,7 +60,7 @@ const ItemRender = (props: {
   return button;
 }
 
-const defaultColumns: any = (data: any, save: (data: any) => void, bookedSlots: Set<string>) => [
+const defaultColumns: any = (room: IRoom, data: any, save: (data: any) => void, bookedSlots: Set<string>) => [
   {
     title: 'Tên phòng',
     fixed: 'start',
@@ -80,7 +80,7 @@ const defaultColumns: any = (data: any, save: (data: any) => void, bookedSlots: 
     ],
   },
   {
-    title: 'Hội An',
+    title: room.name,
     width: 600,
     children: [
       {
@@ -292,7 +292,7 @@ export const KhungGioComponent = ({ room, roomId, onChange }: IKhungGioProps) =>
     setDataSource(newData);
   };
 
-  const columns = defaultColumns(data, setData, bookedSlots).map((col: any) => {
+  const columns = defaultColumns(room, data, setData, bookedSlots).map((col: any) => {
     if (!col.editable) {
       return col;
     }

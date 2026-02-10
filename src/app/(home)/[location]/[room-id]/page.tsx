@@ -13,7 +13,7 @@ import { UploadCustom } from "@/components/upload-file";
 import { IRoom } from "@/models/room";
 import { useWebSocketContext } from "@/contexts/websocket-context";
 import { WS_EVENTS, type TransactionSuccessData, type PaymentConfirmedData } from "@/types/websocket.types";
-import { BOOKING_STATUS_ENUM } from "@/models/booking";
+import { BOOKING_STATUS_ENUM, ICreateBookingRequest } from "@/models/booking";
 
 const { TextArea } = Input;
 
@@ -52,29 +52,15 @@ const beforeUpload = (file: FileType) => {
   return isJpgOrPng && isLt2M;
 };
 
-interface IPayload {
-  fullName: string,
-  phone: string,
-  personCount: number,
-  cccdFrontImageId: string,
-  cccdBackImageId: string,
-  note: string,
-  check1: boolean,
-  check2: boolean,
-  totalPrice: number,
-  roomId: string,
-  times: { date: string, time: string[] }[]
-}
-
 export default function RoomDetail() {
 
   const { socket, isConnected, on, off, emit } = useWebSocketContext();
   const [bookingId, setBookingId] = useState<string>();
   const [paymentSuccess, setPaymentSuccess] = useState(false);
 
-  const [payload, setPayload] = useState<IPayload>({
+  const [payload, setPayload] = useState<ICreateBookingRequest>({
     personCount: 2
-  } as IPayload);
+  } as ICreateBookingRequest);
 
   // hast abc-xyz to bsae64
   const hashToBase64 = (hash: string) => {
@@ -82,9 +68,9 @@ export default function RoomDetail() {
   }
 
 
-  const [room, setRoom] = useState<IRoom | null>(null);
+  const [room, setRoom] = useState<IRoom>();
   const params = useParams();
-  const roomId = params['room-id'];
+  const roomId = params['room-id'] as string;
 
   const [imageUrl1, setImageUrl1] = useState<string>();
   const [imageUrl2, setImageUrl2] = useState<string>();
@@ -117,9 +103,8 @@ export default function RoomDetail() {
 
   const handleCancel = () => {
     setIsModalOpen(false);
-    setBookingId();
+    setBookingId(undefined);
     setPaymentSuccess(false);
-
     // Unsubscribe from booking updates
     if (socket && bookingId) {
       emit(WS_EVENTS.UNSUBSCRIBE_BOOKING, { bookingId });
@@ -161,8 +146,7 @@ export default function RoomDetail() {
       message.error('Vui lòng chọn phòng và khung giờ');
     }
 
-    payload.roomId = roomId;
-    console.log(payload);
+    payload.roomId = roomId as string;
 
     bookingApi.create(payload).then((res) => {
       setBookingId(res.id);
@@ -300,14 +284,14 @@ export default function RoomDetail() {
               const price = room?.prices.reduce((acc, curr) => {
                 acc[curr.type] = curr.price;
                 return acc;
-              }, {} as Record<string, number>);
+              }, {} as Record<string, string>);
 
-              const times = [];
+              const times: any = [];
               Object.keys(data).forEach(key => {
                 const p = Object.entries(data[key]).filter(([_, value]) => value === 1).map(([key]) => key).map(item => {
                   const a = ['time1', 'time2', 'time3'].includes(item) ? '3h' : 'Đêm';
-                  times.push({ date: key, time: item, price: +price[a] || 0 });
-                  return +price[a] || 0;
+                  times.push({ date: key, time: item, price: +(price?.[a] || 0) || 0 });
+                  return +(price?.[a] || 0);
                 });
 
                 total += p.reduce((a, b) => +a + +b, 0);

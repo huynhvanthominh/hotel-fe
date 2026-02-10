@@ -5,6 +5,7 @@ import dayjs from 'dayjs';
 import 'dayjs/locale/vi';
 import { set } from 'date-fns';
 import { ColumnGroupType, ColumnType } from 'antd/es/table';
+import { IRoom } from '@/models/room';
 dayjs.locale('vi');
 
 type FormInstance<T> = GetRef<typeof Form<T>>;
@@ -42,7 +43,7 @@ const ItemRender = (props: {
   }} className='w-full' color="pink"></Button>;
 }
 
-const defaultColumns: ((ColumnGroupType<DataType> | ColumnType<DataType>) & { editable?: boolean; dataIndex?: string })[] = (data, save: (data: any) => void) => [
+const defaultColumns: any = (data: any, save: (data: any) => void) => [
   {
     title: 'Tên phòng',
     fixed: 'start',
@@ -71,7 +72,7 @@ const defaultColumns: ((ColumnGroupType<DataType> | ColumnType<DataType>) & { ed
         key: 'time1',
         width: 100,
         editable: true,
-        render: (_, record) => {
+        render: (_: any, record: any) => {
           return <ItemRender dataKey1={record.ngay} dataKey2={"time1"} data={data} save={save} />;
         }
       },
@@ -81,7 +82,7 @@ const defaultColumns: ((ColumnGroupType<DataType> | ColumnType<DataType>) & { ed
         key: 'time2',
         width: 100,
         editable: true,
-        render: (_, record) => {
+        render: (_: any, record: any) => {
           return <ItemRender dataKey1={record.ngay} dataKey2={"time2"} data={data} save={save} />;
         }
       },
@@ -90,7 +91,7 @@ const defaultColumns: ((ColumnGroupType<DataType> | ColumnType<DataType>) & { ed
         dataIndex: 'time3',
         key: 'time3',
         width: 100,
-        render: (_, record) => {
+        render: (_: any, record: any) => {
           return <ItemRender dataKey1={record.ngay} dataKey2={"time3"} data={data} save={save} />;
         }
       },
@@ -99,13 +100,13 @@ const defaultColumns: ((ColumnGroupType<DataType> | ColumnType<DataType>) & { ed
         dataIndex: 'time4',
         key: 'time4',
         width: 100,
-        render: (_, record) => {
+        render: (_: any, record: any) => {
           return <ItemRender dataKey1={record.ngay} dataKey2={"time4"} data={data} save={save} />;
         }
       },
     ],
   }
-];
+] as any;
 
 const start = dayjs();
 const end = dayjs().add(1, 'month');
@@ -126,7 +127,7 @@ function formatDayLabel(date: string | Date) {
   return `T${day + 1}`;
 }
 for (let date = start; date.isBefore(end); date = date.add(1, 'day')) {
-  const item = {
+  const item: any = {
     thu: formatDayLabel(date.toDate()),
     ngay: date.format('DD-MM-YYYY'),
     key: date.format('DDMMYYYY'),
@@ -233,7 +234,7 @@ export const KhungGioComponent = ({ room, onChange }: IKhungGioProps) => {
     setDataSource(newData);
   };
 
-  const columns = defaultColumns(data, setData).map((col) => {
+  const columns = defaultColumns(data, setData).map((col: any) => {
     if (!col.editable) {
       return col;
     }

@@ -46,18 +46,6 @@ export interface IBooking {
   details?: IBookingDetail[];
 }
 
-export interface ICreateBookingRequest {
-  roomId: string;
-  customerName: string;
-  customerEmail: string;
-  customerPhone: string;
-  checkInDate: string;
-  checkOutDate: string;
-  numberOfGuests: number;
-  totalPrice: number;
-  specialRequests?: string;
-}
-
 export interface IUpdateBookingRequest {
   customerName?: string;
   customerEmail?: string;
@@ -69,3 +57,19 @@ export interface IUpdateBookingRequest {
   status?: BOOKING_STATUS_ENUM;
   specialRequests?: string;
 }
+
+
+export interface ICreateBookingRequest {
+  fullName: string,
+  phone: string,
+  personCount: number,
+  cccdFrontImageId: string,
+  cccdBackImageId: string,
+  note: string,
+  check1: boolean,
+  check2: boolean,
+  totalPrice: number,
+  roomId: string,
+  times: { date: string, time: string[] }[]
+}
+

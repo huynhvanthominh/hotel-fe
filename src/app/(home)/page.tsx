@@ -6,16 +6,17 @@ import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { officeApi } from "@/api/office";
 import { getUrlFromFileId } from "@/utils/get-url-from-file-id";
+import type { IOffice } from "@/models/office";
 export default function HomePage() {
   const router = useRouter();
 
-  const [offices, setOffices] = useState([]);
+  const [offices, setOffices] = useState<IOffice[]>([]);
 
   useEffect(() => {
     officeApi.get().then(rs => {
       setOffices(rs)
     }).catch(err => {
-      alert("Get office failes");
+      alert("Get office failed");
       console.error(err)
     })
   }, [])

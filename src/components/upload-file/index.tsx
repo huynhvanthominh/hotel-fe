@@ -8,7 +8,7 @@ interface IUploadProps {
   children: React.ReactNode;
 }
 
-const uploadFile = async (options: UploadRequestOption) => {
+const uploadFile = async (options: any) => {
   const { file, onSuccess, onError } = options;
 
   const formData = new FormData();

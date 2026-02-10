@@ -1,14 +1,14 @@
-import { IOffice } from "@/models/office";
 import axiosClient from "../aixos.config";
+import type { IRoom } from "@/models/room";
 
 
 
 
-const get = async (): Promise<IOffice[]> => {
+const get = async (): Promise<IRoom[]> => {
   return axiosClient.get('room/get')
 };
 
-const getById = async (id: string): Promise<IOffice> => {
+const getById = async (id: string): Promise<IRoom> => {
   return axiosClient.get(`room/get/${id}`)
 }
 

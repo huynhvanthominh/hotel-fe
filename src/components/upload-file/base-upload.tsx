@@ -1,14 +1,14 @@
 import { Upload, message, type UploadProps, Button } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 import axiosClient from '@/api/aixos.config';
-import {IImage} from '@/models/image';
+import { IImage } from '@/models/image';
 
 interface IBaseUploadProps {
   title?: string;
   onChange?: (res: IImage) => void;
 }
 
-const uploadFile = async (options: UploadRequestOption) => {
+const uploadFile = async (options: any) => {
   const { file, onSuccess, onError } = options;
 
   const formData = new FormData();

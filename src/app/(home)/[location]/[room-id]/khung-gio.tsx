@@ -80,7 +80,7 @@ const defaultColumns: any = (room: IRoom, data: any, save: (data: any) => void, 
     ],
   },
   {
-    title: room.name,
+    title: room?.name ||  '',
     width: 600,
     children: [
       {

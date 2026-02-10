@@ -287,7 +287,7 @@ export default function RoomDetail() {
               {room?.prices.map((item, index) => {
                 return (
                   <div key={index} className="flex">
-                    <span className="font-bold">{item.price}</span>
+                    <span className="font-bold">{parseFloat(item.price).toLocaleString('vi-VN')}</span>
                     <span>/{item.type}</span>
                   </div>
                 )

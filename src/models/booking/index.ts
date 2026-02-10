@@ -21,6 +21,22 @@ export interface IBookingRoom {
   description: string;
 }
 
+export interface IServiceInBooking {
+  id: string;
+  name: string;
+  price: number | string;
+  imageId?: string;
+}
+
+export interface IBookingServiceDetail {
+  id?: string;
+  bookingId?: string;
+  serviceId: string;
+  service?: IServiceInBooking;
+  quantity: number;
+  price: number | string;
+}
+
 export interface IBooking {
   id: string;
   fullName?: string;
@@ -42,8 +58,10 @@ export interface IBooking {
   specialRequests?: string;
   createdAt?: string;
   updatedAt?: string;
+  expiresAt?: string | null;
   room?: IBookingRoom;
   details?: IBookingDetail[];
+  services?: IBookingServiceDetail[];
 }
 
 export interface IUpdateBookingRequest {
@@ -59,6 +77,18 @@ export interface IUpdateBookingRequest {
 }
 
 
+export interface IBookingService {
+  serviceId: string;
+  quantity: number;
+  price: number;
+}
+
+export interface IBookingTime {
+  date: string;
+  time: string;
+  price: number;
+}
+
 export interface ICreateBookingRequest {
   fullName: string,
   phone: string,
@@ -66,10 +96,9 @@ export interface ICreateBookingRequest {
   cccdFrontImageId: string,
   cccdBackImageId: string,
   note: string,
-  check1: boolean,
-  check2: boolean,
   totalPrice: number,
   roomId: string,
-  times: { date: string, time: string[] }[]
+  times: IBookingTime[],
+  services?: IBookingService[]
 }
 

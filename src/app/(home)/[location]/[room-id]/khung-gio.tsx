@@ -1,11 +1,13 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import { Button, Form, Table } from 'antd';
+import { Button, Form, Table, Tooltip } from 'antd';
 import type { GetRef, InputRef, TableColumnsType } from 'antd';
 import dayjs from 'dayjs';
 import 'dayjs/locale/vi';
 import { set } from 'date-fns';
 import { ColumnGroupType, ColumnType } from 'antd/es/table';
 import { IRoom } from '@/models/room';
+import { bookingApi } from '@/api/booking';
+import type { IBooking } from '@/models/booking';
 dayjs.locale('vi');
 
 type FormInstance<T> = GetRef<typeof Form<T>>;
@@ -28,22 +30,37 @@ const ItemRender = (props: {
   dataKey1: string,
   dataKey2: string,
   data: any,
-  save: (data: any) => void
+  save: (data: any) => void,
+  isBooked?: boolean
 }) => {
-  const { dataKey1, dataKey2, data, save } = props;
+  const { dataKey1, dataKey2, data, save, isBooked } = props;
   const [isSelect, setIsSelect] = useState(false);
 
-  return <Button variant={
-    isSelect ? "solid" : "outlined"
-  } onClick={() => {
-    const newData = { ...data };
-    newData[dataKey1] = { ...newData[dataKey1], [dataKey2]: isSelect ? 0 : 1 };
-    save(newData);
-    setIsSelect(!isSelect);
-  }} className='w-full' color="pink"></Button>;
+  const button = (
+    <Button
+      variant={isBooked ? "solid" : (isSelect ? "solid" : "outlined")}
+      onClick={() => {
+        if (isBooked) return;
+        const newData = { ...data };
+        newData[dataKey1] = { ...newData[dataKey1], [dataKey2]: isSelect ? 0 : 1 };
+        save(newData);
+        setIsSelect(!isSelect);
+      }}
+      className='w-full'
+      color={isBooked ? "volcano" : "pink"}
+      disabled={isBooked}
+      // style={isBooked ? { backgroundColor: '#e0e0e0', cursor: 'not-allowed', opacity: 0.6 } : {}}
+    ></Button>
+  );
+
+  if (isBooked) {
+    return <Tooltip title="Đã được đặt">{button}</Tooltip>;
+  }
+
+  return button;
 }
 
-const defaultColumns: any = (data: any, save: (data: any) => void) => [
+const defaultColumns: any = (data: any, save: (data: any) => void, bookedSlots: Set<string>) => [
   {
     title: 'Tên phòng',
     fixed: 'start',
@@ -73,7 +90,9 @@ const defaultColumns: any = (data: any, save: (data: any) => void) => [
         width: 100,
         editable: true,
         render: (_: any, record: any) => {
-          return <ItemRender dataKey1={record.ngay} dataKey2={"time1"} data={data} save={save} />;
+          const isBooked = bookedSlots.has(`${record.ngay}_time1`);
+          console.log('isBooked time1:', isBooked, `${record.ngay}_time1`, bookedSlots);
+          return <ItemRender dataKey1={record.ngay} dataKey2={"time1"} data={data} save={save} isBooked={isBooked} />;
         }
       },
       {
@@ -83,7 +102,8 @@ const defaultColumns: any = (data: any, save: (data: any) => void) => [
         width: 100,
         editable: true,
         render: (_: any, record: any) => {
-          return <ItemRender dataKey1={record.ngay} dataKey2={"time2"} data={data} save={save} />;
+          const isBooked = bookedSlots.has(`${record.ngay}_time2`);
+          return <ItemRender dataKey1={record.ngay} dataKey2={"time2"} data={data} save={save} isBooked={isBooked} />;
         }
       },
       {
@@ -92,7 +112,8 @@ const defaultColumns: any = (data: any, save: (data: any) => void) => [
         key: 'time3',
         width: 100,
         render: (_: any, record: any) => {
-          return <ItemRender dataKey1={record.ngay} dataKey2={"time3"} data={data} save={save} />;
+          const isBooked = bookedSlots.has(`${record.ngay}_time3`);
+          return <ItemRender dataKey1={record.ngay} dataKey2={"time3"} data={data} save={save} isBooked={isBooked} />;
         }
       },
       {
@@ -101,7 +122,8 @@ const defaultColumns: any = (data: any, save: (data: any) => void) => [
         key: 'time4',
         width: 100,
         render: (_: any, record: any) => {
-          return <ItemRender dataKey1={record.ngay} dataKey2={"time4"} data={data} save={save} />;
+          const isBooked = bookedSlots.has(`${record.ngay}_time4`);
+          return <ItemRender dataKey1={record.ngay} dataKey2={"time4"} data={data} save={save} isBooked={isBooked} />;
         }
       },
     ],
@@ -216,13 +238,49 @@ const EditableCell: React.FC<React.PropsWithChildren<EditableCellProps>> = ({
 
 interface IKhungGioProps {
   room?: IRoom | null;
+  roomId?: string;
   onChange?: (data: any) => void;
 }
 
-export const KhungGioComponent = ({ room, onChange }: IKhungGioProps) => {
+export const KhungGioComponent = ({ room, roomId, onChange }: IKhungGioProps) => {
 
   const [dataSource, setDataSource] = useState<DataType[]>(dataSourceDefault);
   const [data, setData] = useState<Record<string, Record<string, string>>>({});
+  const [bookedSlots, setBookedSlots] = useState<Set<string>>(new Set());
+  const [loading, setLoading] = useState(false);
+
+  // Fetch existing bookings for this room
+  useEffect(() => {
+    if (roomId) {
+      setLoading(true);
+      bookingApi.getByRoomId(roomId)
+        .then((bookings: IBooking[]) => {
+          const bookedSet = new Set<string>();
+
+          // Only consider confirmed and pending bookings
+          const activeBookings = bookings.filter(b =>
+            b.status.toUpperCase() === 'CONFIRMED' || b.status.toUpperCase() === 'PENDING'
+          );
+
+          activeBookings.forEach(booking => {
+            if (booking.details) {
+              booking.details.forEach(detail => {
+                const key = `${detail.date}_${detail.time}`;
+                bookedSet.add(key);
+              });
+            }
+          });
+
+          setBookedSlots(bookedSet);
+        })
+        .catch((err) => {
+          console.error('Failed to fetch bookings:', err);
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+    }
+  }, [roomId]);
   const handleSave = (row: DataType) => {
     const newData = [...dataSource];
     const index = newData.findIndex((item) => row.key === item.key);
@@ -234,7 +292,7 @@ export const KhungGioComponent = ({ room, onChange }: IKhungGioProps) => {
     setDataSource(newData);
   };
 
-  const columns = defaultColumns(data, setData).map((col: any) => {
+  const columns = defaultColumns(data, setData, bookedSlots).map((col: any) => {
     if (!col.editable) {
       return col;
     }

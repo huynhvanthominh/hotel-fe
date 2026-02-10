@@ -2,6 +2,7 @@
 import { Button, Carousel, Checkbox, Form, type GetProp, type GetRef, Input, Modal, Select, type UploadProps, message } from "antd";
 import { roomListData } from "../../conts/room-list";
 import { KhungGioComponent } from "./khung-gio";
+import { DichVuComponent } from "./dich-vu";
 import { useState, createContext, useEffect } from "react";
 import { LoadingOutlined, PlusOutlined } from '@ant-design/icons';
 import { useParams } from "next/navigation";
@@ -13,7 +14,7 @@ import { UploadCustom } from "@/components/upload-file";
 import { IRoom } from "@/models/room";
 import { useWebSocketContext } from "@/contexts/websocket-context";
 import { WS_EVENTS, type TransactionSuccessData, type PaymentConfirmedData } from "@/types/websocket.types";
-import { BOOKING_STATUS_ENUM, ICreateBookingRequest } from "@/models/booking";
+import { BOOKING_STATUS_ENUM, ICreateBookingRequest, IBookingService } from "@/models/booking";
 
 const { TextArea } = Input;
 
@@ -57,10 +58,19 @@ export default function RoomDetail() {
   const { socket, isConnected, on, off, emit } = useWebSocketContext();
   const [bookingId, setBookingId] = useState<string>();
   const [paymentSuccess, setPaymentSuccess] = useState(false);
+  const [selectedServices, setSelectedServices] = useState<IBookingService[]>([]);
+  const [serviceTotalPrice, setServiceTotalPrice] = useState(0);
+  const [check1, setCheck1] = useState(false);
+  const [check2, setCheck2] = useState(false);
 
   const [payload, setPayload] = useState<ICreateBookingRequest>({
     personCount: 2
   } as ICreateBookingRequest);
+
+  // Calculate extra guest charge: 50,000 VND per guest over 2
+  const extraGuestCharge = payload.personCount && payload.personCount > 2 
+    ? (payload.personCount - 2) * 50000 
+    : 0;
 
   // hast abc-xyz to bsae64
   const hashToBase64 = (hash: string) => {
@@ -133,11 +143,11 @@ export default function RoomDetail() {
       return;
     }
 
-    if (!payload.check1) {
+    if (!check1) {
       message.error('Vui lòng đồng ý điều khoản 1');
       return;
     }
-    if (!payload.check2) {
+    if (!check2) {
       message.error('Vui lòng đồng ý điều khoản 2');
       return;
     }
@@ -146,10 +156,15 @@ export default function RoomDetail() {
       message.error('Vui lòng chọn phòng và khung giờ');
       return;
     }
+    
+    const finalPayload = {
+      ...payload,
+      roomId: roomId as string,
+      totalPrice: payload.totalPrice + serviceTotalPrice + extraGuestCharge,
+      services: selectedServices.length > 0 ? selectedServices : undefined,
+    };
 
-    payload.roomId = roomId as string;
-
-    bookingApi.create(payload).then((res) => {
+    bookingApi.create(finalPayload).then((res) => {
       setBookingId(res.id);
       
       // Save booking ID to localStorage for tracking
@@ -280,7 +295,7 @@ export default function RoomDetail() {
             </div>
           </div>
           <div>
-            <KhungGioComponent room={room} onChange={data => {
+            <KhungGioComponent room={room} roomId={roomId} onChange={data => {
               let total = 0;
               const price = room?.prices.reduce((acc, curr) => {
                 acc[curr.type] = curr.price;
@@ -305,7 +320,13 @@ export default function RoomDetail() {
             }} />
           </div>
           <div>
-            Dich vu
+            <DichVuComponent 
+              onServiceChange={(services) => {
+                setSelectedServices(services);
+                const total = services.reduce((sum, s) => sum + s.price, 0);
+                setServiceTotalPrice(total);
+              }}
+            />
           </div>
         </div>
         <div>
@@ -394,18 +415,12 @@ export default function RoomDetail() {
 
               <div>
                 <Checkbox onChange={e => {
-                  setPayload({
-                    ...payload,
-                    check1: e.target.checked
-                  })
+                  setCheck1(e.target.checked);
                 }}>
                   Xác nhận mọi người đã đủ tuổi vị thành niên, đồng ý rời khỏi và không được hoàn tiền nếu có dấu hiệu tệ nạn xã hội.
                 </Checkbox>
                 <Checkbox onChange={e => {
-                  setPayload({
-                    ...payload,
-                    check2: e.target.checked
-                  })
+                  setCheck2(e.target.checked);
                 }}>
                   Sau khi quét mã thanh toán thành công bạn hãy quay lại đây để chụp thông tin Booking (Tick để tiếp tục Đặt phòng)
                 </Checkbox>
@@ -425,6 +440,49 @@ export default function RoomDetail() {
               </div>
             </div>
           </div>
+
+          {/* Price Summary */}
+          {payload.totalPrice > 0 && (
+            <div className="bg-white border-2 border-pink-200 rounded-lg p-4 shadow-md">
+              <h3 className="text-lg font-semibold mb-3 text-gray-800">Chi tiết thanh toán</h3>
+              <div className="space-y-2">
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-700">Tổng tiền phòng:</span>
+                  <span className="font-semibold text-gray-900">
+                    {payload.totalPrice.toLocaleString('vi-VN')}đ
+                  </span>
+                </div>
+                
+                {serviceTotalPrice > 0 && (
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-700">Tổng tiền dịch vụ:</span>
+                    <span className="font-semibold text-gray-900">
+                      {serviceTotalPrice.toLocaleString('vi-VN')}đ
+                    </span>
+                  </div>
+                )}
+                
+                {extraGuestCharge > 0 && (
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-700">Phụ thu khách ({payload.personCount! - 2} khách):</span>
+                    <span className="font-semibold text-gray-900">
+                      {extraGuestCharge.toLocaleString('vi-VN')}đ
+                    </span>
+                  </div>
+                )}
+                
+                <div className="border-t-2 border-pink-200 pt-2 mt-2">
+                  <div className="flex justify-between items-center">
+                    <span className="text-lg font-bold text-gray-800">Tổng cộng:</span>
+                    <span className="text-2xl font-bold text-pink-600">
+                      {(payload.totalPrice + serviceTotalPrice + extraGuestCharge).toLocaleString('vi-VN')}đ
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
           <div>
             <Button className="w-full" variant="solid" color="pink" onClick={handleDatphong}>Đặt phòng</Button>
           </div>
@@ -468,12 +526,22 @@ export default function RoomDetail() {
                 {isConnected ? "● Đang chờ xác nhận thanh toán..." : "○ Đang kết nối..."}
               </div>
               <img
-                src={`https://payment.pay2s.vn/quicklink/${process.env.NEXT_PUBLIC_BANK_BRANCH}/${process.env.NEXT_PUBLIC_BANK_ACCOUNT}/${process.env.NEXT_PUBLIC_BANK_NAME}?amount=${payload.totalPrice}&is_mask=0&bg=0&memo=${hashToBase64(bookingId || '')}`}
+                src={`https://payment.pay2s.vn/quicklink/${process.env.NEXT_PUBLIC_BANK_BRANCH}/${process.env.NEXT_PUBLIC_BANK_ACCOUNT}/${process.env.NEXT_PUBLIC_BANK_NAME}?amount=${payload.totalPrice + serviceTotalPrice + extraGuestCharge}&is_mask=0&bg=0&memo=${hashToBase64(bookingId || '')}`}
                 alt="QR Code thanh toán"
                 width={400}
                 height={400}
               />
               <p className="text-sm text-gray-600">Vui lòng quét mã QR để thanh toán</p>
+              <div className="text-sm text-gray-600">
+                <p>Tổng phòng: {payload.totalPrice?.toLocaleString('vi-VN')}đ</p>
+                {serviceTotalPrice > 0 && (
+                  <p>Tổng dịch vụ: {serviceTotalPrice.toLocaleString('vi-VN')}đ</p>
+                )}
+                {extraGuestCharge > 0 && (
+                  <p>Phụ thu khách: {extraGuestCharge.toLocaleString('vi-VN')}đ</p>
+                )}
+                <p className="font-semibold mt-1">Tổng cộng: {(payload.totalPrice + serviceTotalPrice + extraGuestCharge).toLocaleString('vi-VN')}đ</p>
+              </div>
             </>
           )}
         </div>

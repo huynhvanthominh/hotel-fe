@@ -10,7 +10,7 @@ const getById = async (id: string): Promise<IBooking> => {
 };
 
 const getByRoomId = async (roomId: string): Promise<IBooking[]> => {
-  return axiosClient.get(`booking/get-by-room/${roomId}`);
+  return axiosClient.get(`booking/room/${roomId}`);
 };
 
 const create = async (data: ICreateBookingRequest): Promise<IBooking> => {
@@ -22,7 +22,7 @@ const update = async (id: string, data: IUpdateBookingRequest): Promise<IBooking
 };
 
 const cancel = async (id: string): Promise<IBooking> => {
-  return axiosClient.put(`booking/cancel/${id}`);
+  return axiosClient.patch(`booking/cancel/${id}`);
 };
 
 const remove = async (id: string): Promise<void> => {

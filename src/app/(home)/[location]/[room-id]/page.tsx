@@ -1,10 +1,19 @@
 'use client';
-import { Button, Carousel, Checkbox, Form, GetProp, GetRef, Input, Modal, Select, Upload, UploadProps, message } from "antd";
+import { Button, Carousel, Checkbox, Form, type GetProp, type GetRef, Input, Modal, Select, type UploadProps, message } from "antd";
 import { roomListData } from "../../conts/room-list";
 import { KhungGioComponent } from "./khung-gio";
-import { useState, createContext } from "react";
+import { useState, createContext, useEffect } from "react";
 import { LoadingOutlined, PlusOutlined } from '@ant-design/icons';
-import Image from "next/image";
+import { useParams } from "next/navigation";
+import Link from "next/link";
+import { roomApi } from "@/api/room";
+import { getUrlFromFileId } from "@/utils/get-url-from-file-id";
+import { bookingApi } from "@/api/booking";
+import { UploadCustom } from "@/components/upload-file";
+import { IRoom } from "@/models/room";
+import { useWebSocketContext } from "@/contexts/websocket-context";
+import { WS_EVENTS, type TransactionSuccessData, type PaymentConfirmedData } from "@/types/websocket.types";
+import { BOOKING_STATUS_ENUM, ICreateBookingRequest } from "@/models/booking";
 
 const { TextArea } = Input;
 
@@ -23,6 +32,7 @@ const contentStyle: React.CSSProperties = {
   textAlign: 'center',
   background: '#364d79',
 };
+
 const getBase64 = (img: FileType, callback: (url: string) => void) => {
   const reader = new FileReader();
   reader.addEventListener('load', () => callback(reader.result as string));
@@ -42,57 +52,44 @@ const beforeUpload = (file: FileType) => {
   return isJpgOrPng && isLt2M;
 };
 
-
 export default function RoomDetail() {
 
-  const data = roomListData[0];
+  const { socket, isConnected, on, off, emit } = useWebSocketContext();
+  const [bookingId, setBookingId] = useState<string>();
+  const [paymentSuccess, setPaymentSuccess] = useState(false);
 
-  const [loading1, setLoading1] = useState(false);
+  const [payload, setPayload] = useState<ICreateBookingRequest>({
+    personCount: 2
+  } as ICreateBookingRequest);
+
+  // hast abc-xyz to bsae64
+  const hashToBase64 = (hash: string) => {
+    return Buffer.from(hash).toString('base64');
+  }
+
+
+  const [room, setRoom] = useState<IRoom>();
+  const params = useParams();
+  const roomId = params['room-id'] as string;
+
   const [imageUrl1, setImageUrl1] = useState<string>();
-  const [loading2, setLoading2] = useState(false);
   const [imageUrl2, setImageUrl2] = useState<string>();
 
-  const handleChange1: UploadProps['onChange'] = (info) => {
-    if (info.file.status === 'uploading') {
-      setLoading1(true);
-      return;
-    }
-    if (info.file.status === 'done') {
-      // Get this url from response in real world.
-      getBase64(info.file.originFileObj as FileType, (url) => {
-        setLoading1(false);
-        setImageUrl1(url);
-      });
-    }
-  };
 
   const uploadButton1 = (
     <button style={{ border: 0, background: 'none' }} type="button">
-      {loading1 ? <LoadingOutlined /> : <PlusOutlined />}
+      {<PlusOutlined />}
       <div style={{ marginTop: 8 }}>Căn cước công dân mặt trước</div>
     </button>
   );
 
   const uploadButton2 = (
     <button style={{ border: 0, background: 'none' }} type="button">
-      {loading2 ? <LoadingOutlined /> : <PlusOutlined />}
+      {<PlusOutlined />}
       <div style={{ marginTop: 8 }}>Căn cước công dân mặt sau</div>
     </button>
   );
 
-  const handleChange2: UploadProps['onChange'] = (info) => {
-    if (info.file.status === 'uploading') {
-      setLoading2(true);
-      return;
-    }
-    if (info.file.status === 'done') {
-      // Get this url from response in real world.
-      getBase64(info.file.originFileObj as FileType, (url) => {
-        setLoading2(false);
-        setImageUrl2(url);
-      });
-    }
-  };
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -106,26 +103,144 @@ export default function RoomDetail() {
 
   const handleCancel = () => {
     setIsModalOpen(false);
+    setBookingId(undefined);
+    setPaymentSuccess(false);
+    // Unsubscribe from booking updates
+    if (socket && bookingId) {
+      emit(WS_EVENTS.UNSUBSCRIBE_BOOKING, { bookingId });
+    }
   };
 
   const handleDatphong = () => {
+    if (!payload.fullName) {
+      message.error('Vui lòng nhập họ và tên');
+      return;
+    }
+    if (!payload.phone) {
+      message.error('Vui lòng nhập số điện thoại');
+      return;
+    }
+    if (!payload.personCount) {
+      message.error('Vui lòng nhập số lượng khách');
+      return;
+    }
+    if (!payload.cccdFrontImageId) {
+      message.error('Vui lòng tải ảnh cccd mặt trước');
+      return;
+    }
+    if (!payload.cccdBackImageId) {
+      message.error('Vui lòng tải ảnh cccd mặt sau');
+      return;
+    }
 
-    showModal();
+    if (!payload.check1) {
+      message.error('Vui lòng đồng ý điều khoản 1');
+      return;
+    }
+    if (!payload.check2) {
+      message.error('Vui lòng đồng ý điều khoản 2');
+      return;
+    }
+
+    if (!payload.totalPrice) {
+      message.error('Vui lòng chọn phòng và khung giờ');
+    }
+
+    payload.roomId = roomId as string;
+
+    bookingApi.create(payload).then((res) => {
+      setBookingId(res.id);
+      
+      // Save booking ID to localStorage for tracking
+      const existingBookings = localStorage.getItem('bookings');
+      const bookingIds = existingBookings ? JSON.parse(existingBookings) : [];
+      if (!bookingIds.includes(res.id)) {
+        bookingIds.unshift(res.id); // Add to beginning of array
+        localStorage.setItem('bookings', JSON.stringify(bookingIds));
+      }
+    }).catch((err) => {
+      message.error('Đặt phòng thất bại');
+    });
   }
 
+  useEffect(() => {
+    if (bookingId) {
+      showModal();
+
+      // Emit to server that we're waiting for this booking's payment
+      if (isConnected && socket) {
+        emit(WS_EVENTS.SUBSCRIBE_BOOKING, { bookingId });
+      }
+    }
+
+  }, [bookingId, isConnected])
+
+  // Listen for transaction success from WebSocket
+  useEffect(() => {
+    const handleTransactionSuccess = (data: TransactionSuccessData) => {
+      console.log('Transaction success received:', data);
+
+      // Check if this transaction is for current booking
+      if (data.bookingId === bookingId) {
+        setPaymentSuccess(true);
+        message.success('Thanh toán thành công! Booking của bạn đã được xác nhận.');
+        const old = localStorage.getItem('bookings');
+        localStorage.setItem('bookings', JSON.stringify([data.bookingId, ...(old ? JSON.parse(old) : [])]));
+
+        // Update booking status
+        // bookingApi.update(bookingId, { status: BOOKING_STATUS_ENUM.CONFIRMED }).catch((err) => {
+        //   console.error('Failed to update booking status:', err);
+        // });
+      }
+    };
+
+    const handlePaymentConfirmed = (data: PaymentConfirmedData) => {
+      console.log('Payment confirmed received:', data);
+
+      if (data.bookingId === bookingId && data.confirmed) {
+        setPaymentSuccess(true);
+        message.success('Thanh toán thành công! Booking của bạn đã được xác nhận.');
+
+        // Update booking status
+        bookingApi.update(bookingId, { status: BOOKING_STATUS_ENUM.CONFIRMED }).catch((err) => {
+          console.error('Failed to update booking status:', err);
+        });
+      }
+    };
+
+    if (socket) {
+      on(WS_EVENTS.TRANSACTION_SUCCESS, handleTransactionSuccess);
+      on(WS_EVENTS.PAYMENT_CONFIRMED, handlePaymentConfirmed);
+    }
+
+    return () => {
+      if (socket) {
+        off(WS_EVENTS.TRANSACTION_SUCCESS, handleTransactionSuccess);
+        off(WS_EVENTS.PAYMENT_CONFIRMED, handlePaymentConfirmed);
+      }
+    };
+  }, [socket, bookingId, on, off]);
+
+  useEffect(() => {
+    roomApi.getById(roomId).then((res) => {
+      setRoom(res);
+    }).catch((err) => {
+      console.log(err);
+    })
+  }, [roomId]);
 
   return (
     <Form>
       <div className="flex md:flex-row flex-col gap-4">
         <div className="md:w-8/12 w-full flex flex-col gap-4">
-          <div> <h1 className="text-3xl">{data.name}</h1></div>
+          <div> <h1 className="text-3xl">{room?.name}</h1></div>
           <div>
             <Carousel autoplay arrows >
               {
-                data.images.map((item) => {
+                room?.images.map((item) => {
                   return (
-                    <div key={item.id}>
-                      <Image src={item.imageUrl} alt="room image" className="w-full object-cover" />
+                    <div key={item.id} >
+                      <img src={getUrlFromFileId(item.imageId)} alt="room image" className="w-full object-cover" />
                     </div>
                   )
                 })
@@ -138,10 +253,10 @@ export default function RoomDetail() {
               Tiện  nghi phòng
             </div>
             <div className="grid md:grid-cols-4 grid-cols-2 gap-4">
-              {data.amenities.map((amenity, index) => {
+              {roomListData[0].amenities.map((amenity, index) => {
                 return (
                   <div key={index} className="flex items-center gap-2">
-                    <Image src={amenity.iconUrl} alt={amenity.name} className="w-6 h-6" width={24} height={24} />
+                    <img src={amenity.iconUrl} alt={amenity.name} className="w-6 h-6" width={24} height={24} />
                     <span>{amenity.name}</span>
                   </div>
                 )
@@ -153,7 +268,7 @@ export default function RoomDetail() {
               Bảng giá
             </div>
             <div className="grid grid-cols-2 gap-4">
-              {data.prices.map((item, index) => {
+              {room?.prices.map((item, index) => {
                 return (
                   <div key={index} className="flex">
                     <span className="font-bold">{item.price}</span>
@@ -164,7 +279,29 @@ export default function RoomDetail() {
             </div>
           </div>
           <div>
-            <KhungGioComponent />
+            <KhungGioComponent room={room} onChange={data => {
+              let total = 0;
+              const price = room?.prices.reduce((acc, curr) => {
+                acc[curr.type] = curr.price;
+                return acc;
+              }, {} as Record<string, string>);
+
+              const times: any = [];
+              Object.keys(data).forEach(key => {
+                const p = Object.entries(data[key]).filter(([_, value]) => value === 1).map(([key]) => key).map(item => {
+                  const a = ['time1', 'time2', 'time3'].includes(item) ? '3h' : 'Đêm';
+                  times.push({ date: key, time: item, price: +(price?.[a] || 0) || 0 });
+                  return +(price?.[a] || 0);
+                });
+
+                total += p.reduce((a, b) => +a + +b, 0);
+              });
+              setPayload({
+                ...payload,
+                totalPrice: total,
+                times
+              })
+            }} />
           </div>
           <div>
             Dich vu
@@ -175,12 +312,26 @@ export default function RoomDetail() {
             Thông tin đặt phòng
           </div>
           <div className="flex flex-col gap-4">
-            <Input placeholder="Họ và tên"></Input>
-            <Input placeholder="Số điện thoại"></Input>
+            <Input placeholder="Họ và tên" onChange={e => setPayload({
+              ...payload,
+              fullName: e.target.value
+            })}></Input>
+            <Input placeholder="Số điện thoại" onChange={e => {
+              setPayload({
+                ...payload,
+                phone: e.target.value
+              })
+            }}></Input>
             <span>* Bạn vui lòng nhập đúng số điện thoại, Home sẽ gửi thông tin check-in qua Zalo ạ</span>
             <Select className="w-full"
               placeholder="Số lượng khách"
-              value={'2'}
+              value={payload.personCount?.toString()}
+              onChange={e => {
+                setPayload({
+                  ...payload,
+                  personCount: Number(e)
+                })
+              }}
               options={[
                 { value: '1', label: '1 Khách' },
                 { value: '2', label: '2 Khách' },
@@ -196,37 +347,31 @@ export default function RoomDetail() {
             <div className="flex flex-col gap-4">
               <div>Căn cước công dân</div>
               <div className="flex justify-around gap-4">
-                <Upload
-                  name="cccd1"
-                  listType="picture-card"
-                  className="avatar-uploader"
-                  showUploadList={false}
-                  action="https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload"
-                  beforeUpload={beforeUpload}
-                  onChange={handleChange1}
+                <UploadCustom
+                  onChange={(rs) => {
+                    setImageUrl1(getUrlFromFileId(rs.id));
+                    setPayload({ ...payload, cccdFrontImageId: rs.id });
+                  }}
                 >
                   {imageUrl1 ? (
-                    <Image draggable={false} src={imageUrl1} alt="avatar" style={{ width: '100%' }} />
+                    <img draggable={false} src={imageUrl1} alt="avatar" style={{ width: '100%' }} />
                   ) : (
                     uploadButton1
                   )}
-                </Upload>
+                </UploadCustom>
 
-                <Upload
-                  name="cccd2"
-                  listType="picture-card"
-                  className="avatar-uploader"
-                  showUploadList={false}
-                  action="https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload"
-                  beforeUpload={beforeUpload}
-                  onChange={handleChange2}
+                <UploadCustom
+                  onChange={(rs) => {
+                    setImageUrl2(getUrlFromFileId(rs.id));
+                    setPayload({ ...payload, cccdBackImageId: rs.id });
+                  }}
                 >
                   {imageUrl2 ? (
-                    <Image draggable={false} src={imageUrl2} alt="avatar" style={{ width: '100%' }} />
+                    <img draggable={false} src={imageUrl2} alt="avatar" style={{ width: '100%' }} />
                   ) : (
                     uploadButton2
                   )}
-                </Upload>
+                </UploadCustom>
               </div>
               <p>
                 * Để tránh bị ảnh hưởng khi qua đêm tại Home do cơ quan chức năng đến kiểm tra bất ngờ, nếu khai báo lưu trú thiếu thông tin của khách đi cùng nên khách book có khung giờ qua đêm, Home sẽ cần thêm thông tin CCCD của người đi cùng.
@@ -238,14 +383,29 @@ export default function RoomDetail() {
                 * Nếu không thể tải ảnh cccd thì quý khách hãy chọn dấu 3 chấm và Mở Trong Trình Duyệt
               </p>
               <div>
-                <TextArea rows={4} placeholder="Ghi chú thêm cho Home (nếu có)" />
+                <TextArea onChange={e => {
+                  setPayload({
+                    ...payload,
+                    note: e.target.value
+                  })
+                }} rows={4} placeholder="Ghi chú thêm cho Home (nếu có)" />
               </div>
 
               <div>
-                <Checkbox>
+                <Checkbox onChange={e => {
+                  setPayload({
+                    ...payload,
+                    check1: e.target.checked
+                  })
+                }}>
                   Xác nhận mọi người đã đủ tuổi vị thành niên, đồng ý rời khỏi và không được hoàn tiền nếu có dấu hiệu tệ nạn xã hội.
                 </Checkbox>
-                <Checkbox>
+                <Checkbox onChange={e => {
+                  setPayload({
+                    ...payload,
+                    check2: e.target.checked
+                  })
+                }}>
                   Sau khi quét mã thanh toán thành công bạn hãy quay lại đây để chụp thông tin Booking (Tick để tiếp tục Đặt phòng)
                 </Checkbox>
               </div>
@@ -275,9 +435,46 @@ export default function RoomDetail() {
         open={isModalOpen}
         onOk={handleOk}
         onCancel={handleCancel}
+        destroyOnHidden={true}
+        footer={paymentSuccess ? [
+          <Button key="track" type="default" onClick={() => window.location.href = '/tra-cuu'}>
+            Xem chi tiết booking
+          </Button>,
+          <Button key="ok" type="primary" onClick={handleOk}>
+            Đóng
+          </Button>
+        ] : null}
       >
-        <div>
-          <Image src="https://payment.pay2s.vn/quicklink/MBB/992222142000/TRUONG%20THI%20KIEU%20OANH?amount=20000&is_mask=1&&bg=0" alt="" width={400} height={400} />
+        <div className="flex flex-col items-center gap-4">
+          {paymentSuccess ? (
+            <div className="text-center">
+              <div className="text-green-600 text-2xl mb-4">✓</div>
+              <h3 className="text-xl font-semibold mb-2">Thanh toán thành công!</h3>
+              <p>Mã booking của bạn: <strong>{bookingId}</strong></p>
+              <p className="mt-2">Thông tin chi tiết đã được gửi qua Zalo</p>
+              <div className="mt-4 p-3 bg-blue-50 rounded">
+                <p className="text-sm text-blue-800">
+                  Bạn có thể xem chi tiết booking bất kỳ lúc nào tại trang{' '}
+                  <Link href="/tra-cuu" className="underline font-semibold">
+                    Tra cứu booking
+                  </Link>
+                </p>
+              </div>
+            </div>
+          ) : (
+            <>
+              <div className={isConnected ? "text-green-600 text-sm" : "text-orange-600 text-sm"}>
+                {isConnected ? "● Đang chờ xác nhận thanh toán..." : "○ Đang kết nối..."}
+              </div>
+              <img
+                src={`https://payment.pay2s.vn/quicklink/${process.env.NEXT_PUBLIC_BANK_BRANCH}/${process.env.NEXT_PUBLIC_BANK_ACCOUNT}/${process.env.NEXT_PUBLIC_BANK_NAME}?amount=${payload.totalPrice}&is_mask=0&bg=0&memo=${hashToBase64(bookingId || '')}`}
+                alt="QR Code thanh toán"
+                width={400}
+                height={400}
+              />
+              <p className="text-sm text-gray-600">Vui lòng quét mã QR để thanh toán</p>
+            </>
+          )}
         </div>
       </Modal>
     </Form>

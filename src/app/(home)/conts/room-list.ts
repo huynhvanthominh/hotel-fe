@@ -16,21 +16,21 @@ export const roomListData = [1, 2, 3, 4, 5].map((item): IRoom => {
 
     }],
     images: [{
-      imageUrl: 'https://localhome.vn/uploads/2026/01/z7414962436891_955d00bf36465a5323d3511874347680.jpg',
+      imageId: 'https://localhome.vn/uploads/2026/01/z7414962436891_955d00bf36465a5323d3511874347680.jpg',
       id: "1",
       roomId: item.toString()
     },
     {
-      imageUrl: 'https://localhome.vn/uploads/2026/01/z7414962436891_955d00bf36465a5323d3511874347680.jpg',
+      imageId: 'https://localhome.vn/uploads/2026/01/z7414962436891_955d00bf36465a5323d3511874347680.jpg',
       id: "2",
       roomId: item.toString()
     },
     {
-      imageUrl: 'https://localhome.vn/uploads/2026/01/z7414962436891_955d00bf36465a5323d3511874347680.jpg',
+      imageId: 'https://localhome.vn/uploads/2026/01/z7414962436891_955d00bf36465a5323d3511874347680.jpg',
       id: "3",
       roomId: item.toString()
     }, {
-      imageUrl: 'https://localhome.vn/uploads/2026/01/z7414962436891_955d00bf36465a5323d3511874347680.jpg',
+      imageId: 'https://localhome.vn/uploads/2026/01/z7414962436891_955d00bf36465a5323d3511874347680.jpg',
       id: "4",
       roomId: item.toString()
     }],

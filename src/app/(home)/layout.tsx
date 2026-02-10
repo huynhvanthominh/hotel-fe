@@ -1,11 +1,12 @@
 'use client'
 import Container from "@/components/container";
-import { Button, Drawer, Grid, Layout } from "antd";
+import { Button, Drawer, Layout } from "antd";
 import { MenuOutlined } from "@ant-design/icons";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import Image from "next/image";
 
-const { Header, Footer, Sider, Content } = Layout;
+const { Content } = Layout;
 const mainColor = '#E0b0FF'
 const headerStyle: React.CSSProperties = {
   color: '#fff',
@@ -13,20 +14,8 @@ const headerStyle: React.CSSProperties = {
   height: 101,
 };
 
-const contentStyle: React.CSSProperties = {
-  textAlign: 'center',
-  minHeight: 120,
-  lineHeight: '120px',
-  color: '#fff',
-  backgroundColor: '#0958d9',
-};
 
-const siderStyle: React.CSSProperties = {
-  textAlign: 'center',
-  lineHeight: '120px',
-  color: '#fff',
-  backgroundColor: '#1677ff',
-};
+
 
 const footerStyle: React.CSSProperties = {
   textAlign: 'center',
@@ -35,9 +24,11 @@ const footerStyle: React.CSSProperties = {
 };
 
 const NavMenuMobile = () => {
+  const router = useRouter();
+
   return (
     <div>
-      <div>
+      <div onClick={() => router.push('/tra-cuu')}>
         Tra cứu booking
       </div>
       <div>
@@ -52,10 +43,10 @@ const NavMenuMobile = () => {
 
 
 const NavMenu = () => {
-
+  const router = useRouter();
   return (
     <>
-      <div>
+      <div className="cursor-pointer" onClick={() => router.push('/tra-cuu')}>
         Tra cứu booking
       </div>
       <div>
@@ -87,6 +78,8 @@ export default function UserLayout({
     setOpen(false);
   };
 
+
+
   return (
     <>
       <main className="h-full " style={{
@@ -94,14 +87,14 @@ export default function UserLayout({
         height: '100vh'
       }}>
         <Layout className="overflow-hidden w-full max-w-full gap-4">
-          <div className="flex md:justify-center md:items-center md:px-0 px-4" style={headerStyle}>
+          <div className="flex md:justify-center md:items-center md:px-0 px-4 overflow-hidden" style={headerStyle}>
             <div className="flex md:w-7/12 w-full" style={{
             }}>
               <div className="flex">
                 <div className="p-2 cursor-pointer" onClick={() => {
                   router.push("/")
                 }}>
-                  <img src="/taga-home-icon.png" alt="" className="max-w-full max-h-full" />
+                  <Image src="/taga-home-icon.png" width={300} height={80} alt="" className="max-w-full max-h-full" />
                 </div>
               </div>
             </div>
@@ -132,7 +125,7 @@ export default function UserLayout({
                 <div className="flex md:flex-row flex-col justify-around">
                   <div className="flex flex-col">
                     <div className="p-2 flex justify-center">
-                      <img src="/taga-home-icon.png" alt="" className="" width={256} />
+                      <Image src="/taga-home-icon.png" alt="" width={256} height={256} />
                     </div>
                     <div className="flex flex-col justify-start">
                       Hotline:

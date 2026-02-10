@@ -8,7 +8,7 @@ export interface IOffice {
   phone: string;
   email: string;
   status: STATUS_ENUM;
-  imageUrl: string;
+  imageId: string;
 }
 
 export interface ICreateOffice extends Omit<IOffice, 'id' | 'status'>{}

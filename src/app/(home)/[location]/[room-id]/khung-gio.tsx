@@ -12,88 +12,99 @@ type FormInstance<T> = GetRef<typeof Form<T>>;
 const EditableContext = React.createContext<FormInstance<any> | null>(null);
 
 interface DataType {
-    key: React.Key;
-    name: string;
-    thu: string;
-    ngay: string;
-    building: string;
-    number: number;
-    companyAddress: string;
-    companyName: string;
-    gender: string;
+  key: React.Key;
+  name: string;
+  thu: string;
+  ngay: string;
+  building: string;
+  number: number;
+  companyAddress: string;
+  companyName: string;
+  gender: string;
 }
 
-const ItemRender = () => {
-    const [isSelect, setIsSelect] = useState(false);
+const ItemRender = (props: {
+  dataKey1: string,
+  dataKey2: string,
+  data: any,
+  save: (data: any) => void
+}) => {
+  const { dataKey1, dataKey2, data, save } = props;
+  const [isSelect, setIsSelect] = useState(false);
 
-    return <Button variant={
-        isSelect ? "solid" : "outlined"
-    } onClick={() => {
-        setIsSelect(!isSelect);
-    }} className='w-full' color="pink"></Button>;
+  return <Button variant={
+    isSelect ? "solid" : "outlined"
+  } onClick={() => {
+    const newData = { ...data };
+    newData[dataKey1] = { ...newData[dataKey1], [dataKey2]: isSelect ? 0 : 1 };
+    save(newData);
+    setIsSelect(!isSelect);
+  }} className='w-full' color="pink"></Button>;
 }
 
-const defaultColumns: ((ColumnGroupType<DataType> | ColumnType<DataType>) & { editable?: boolean; dataIndex?: string })[] = [
-    {
-        title: 'Tên phòng',
-        fixed: 'start',
-        children: [
-            {
-                title: 'Thứ',
-                dataIndex: 'thu',
-                key: 'thu',
-                width: 80
-            },
-            {
-                title: 'Ngày',
-                dataIndex: 'ngay',
-                key: 'ngay',
-                width: 100
-            },
-        ],
-    },
-    {
-        title: 'Hội An',
-        width: 600,
-        children: [
-            {
-                title: '08:30 - 11:30',
-                dataIndex: 'companyAddress',
-                key: 'companyAddress',
-                width: 100,
-                render: () => {
-                    return <ItemRender />;
-                }
-            },
-            {
-                title: '12:00 - 15:00',
-                dataIndex: 'companyName',
-                key: 'companyName',
-                width: 100,
-                render: () => {
-                    return <ItemRender />;
-                }
-            },
-            {
-                title: '15:30 - 18:30',
-                dataIndex: 'companyName',
-                key: 'companyName',
-                width: 100,
-                render: () => {
-                    return <ItemRender />;
-                }
-            },
-            {
-                title: '19:00 - 07:50',
-                dataIndex: 'companyName',
-                key: 'companyName',
-                width: 100,
-                render: () => {
-                    return <ItemRender />;
-                }
-            },
-        ],
-    }
+const defaultColumns: ((ColumnGroupType<DataType> | ColumnType<DataType>) & { editable?: boolean; dataIndex?: string })[] = (data, save: (data: any) => void) => [
+  {
+    title: 'Tên phòng',
+    fixed: 'start',
+    children: [
+      {
+        title: 'Thứ',
+        dataIndex: 'thu',
+        key: 'thu',
+        width: 80
+      },
+      {
+        title: 'Ngày',
+        dataIndex: 'ngay',
+        key: 'ngay',
+        width: 100
+      },
+    ],
+  },
+  {
+    title: 'Hội An',
+    width: 600,
+    children: [
+      {
+        title: '08:30 - 11:30',
+        dataIndex: 'time1',
+        key: 'time1',
+        width: 100,
+        editable: true,
+        render: (_, record) => {
+          return <ItemRender dataKey1={record.ngay} dataKey2={"time1"} data={data} save={save} />;
+        }
+      },
+      {
+        title: '12:00 - 15:00',
+        dataIndex: 'time2',
+        key: 'time2',
+        width: 100,
+        editable: true,
+        render: (_, record) => {
+          return <ItemRender dataKey1={record.ngay} dataKey2={"time2"} data={data} save={save} />;
+        }
+      },
+      {
+        title: '15:30 - 18:30',
+        dataIndex: 'time3',
+        key: 'time3',
+        width: 100,
+        render: (_, record) => {
+          return <ItemRender dataKey1={record.ngay} dataKey2={"time3"} data={data} save={save} />;
+        }
+      },
+      {
+        title: '19:00 - 07:50',
+        dataIndex: 'time4',
+        key: 'time4',
+        width: 100,
+        render: (_, record) => {
+          return <ItemRender dataKey1={record.ngay} dataKey2={"time4"} data={data} save={save} />;
+        }
+      },
+    ],
+  }
 ];
 
 const start = dayjs();
@@ -101,171 +112,169 @@ const end = dayjs().add(1, 'month');
 const dataSourceDefault: DataType[] = [];
 
 function formatDayLabel(date: string | Date) {
-    const d = dayjs(date);
-    const today = dayjs();
+  const d = dayjs(date);
+  const today = dayjs();
 
-    if (d.isSame(today, 'day')) {
-        return 'Hôm nay';
-    }
+  if (d.isSame(today, 'day')) {
+    return 'Hôm nay';
+  }
 
-    const day = d.day();
-    // day(): 0 = CN, 1 = T2, 2 = T3, ...
+  const day = d.day();
 
-    if (day === 0) return 'CN';
+  if (day === 0) return 'CN';
 
-    return `T${day + 1}`;
+  return `T${day + 1}`;
 }
 for (let date = start; date.isBefore(end); date = date.add(1, 'day')) {
-    dataSourceDefault.push({
-        thu: formatDayLabel(date.toDate()),
-        key: date.format('DDMMYYYY'),
-        name: 'John Brown',
-        ngay: date.format('DD-MM-YYYY'),
-        building: 'C',
-        number: 2035,
-        companyAddress: 'Lake Street 42',
-        companyName: 'SoftLake Co',
-        gender: 'M',
+  const item = {
+    thu: formatDayLabel(date.toDate()),
+    ngay: date.format('DD-MM-YYYY'),
+    key: date.format('DDMMYYYY'),
+  }
+  const timeItems = [{ key: 'time1', value: '' }, { key: 'time2', value: '' }, { key: 'time3', value: '' }, { key: 'time4', value: '' }];
+  timeItems
+    .forEach(timeItem => {
+      (item as any)[timeItem.key] = timeItem.value;
     });
+  dataSourceDefault.push(item);
 }
-// const dataSource = Array.from({ length: 100 }).map<DataType>((_, i) => ({
-//     key: i,
-//     name: 'John Brown',
-//     age: i + 1,
-//     street: 'Lake Park',
-//     building: 'C',
-//     number: 2035,
-//     companyAddress: 'Lake Street 42',
-//     companyName: 'SoftLake Co',
-//     gender: 'M',
-// }));
-
 
 interface EditableRowProps {
-    index: number;
+  index: number;
 }
 
 const EditableRow: React.FC<EditableRowProps> = ({ index, ...props }) => {
-    const [form] = Form.useForm();
-    return (
-        <Form form={form} component={false}>
-            <EditableContext.Provider value={form}>
-                <tr {...props} />
-            </EditableContext.Provider>
-        </Form>
-    );
+  const [form] = Form.useForm();
+  return (
+    <Form form={form} component={false}>
+      <EditableContext.Provider value={form}>
+        <tr {...props} />
+      </EditableContext.Provider>
+    </Form>
+  );
 };
 
 interface EditableCellProps {
-    title: React.ReactNode;
-    editable: boolean;
-    dataIndex: keyof DataType;
-    record: DataType;
-    handleSave: (record: DataType) => void;
+  title: React.ReactNode;
+  editable: boolean;
+  dataIndex: keyof DataType;
+  record: DataType;
+  handleSave: (record: DataType) => void;
 }
 
 const EditableCell: React.FC<React.PropsWithChildren<EditableCellProps>> = ({
-    title,
-    editable,
-    children,
-    dataIndex,
-    record,
-    handleSave,
-    ...restProps
+  title,
+  editable,
+  children,
+  dataIndex,
+  record,
+  handleSave,
+  ...restProps
 }) => {
-    const [editing, setEditing] = useState(false);
-    const inputRef = useRef<InputRef>(null);
-    const form = useContext(EditableContext)!;
+  const [editing, setEditing] = useState(true);
+  const inputRef = useRef<InputRef>(null);
+  const form = useContext(EditableContext)!;
 
-    useEffect(() => {
-        if (editing) {
-            inputRef.current?.focus();
-        }
-    }, [editing]);
-
-    const toggleEdit = () => {
-        setEditing(!editing);
-        form.setFieldsValue({ [dataIndex]: record[dataIndex] });
-    };
-
-    const [isSelect, setIsSelect] = useState(false);
-
-
-
-    const save = async () => {
-        try {
-            const values = await form.validateFields();
-
-            toggleEdit();
-            handleSave({ ...record, ...values });
-        } catch (errInfo) {
-            console.log('Save failed:', errInfo);
-        }
-    };
-
-
-    if (editable) {
-        return <Button variant={
-            isSelect ? "solid" : "outlined"
-        } onClick={() => {
-            setIsSelect(!isSelect);
-        }} className='w-full' color="pink"></Button>;
+  useEffect(() => {
+    if (editing) {
+      inputRef.current?.focus();
     }
+  }, [editing]);
 
-    return <td {...restProps}>{children}</td>;
+  const toggleEdit = () => {
+    setEditing(true);
+    form.setFieldsValue({ [dataIndex]: record[dataIndex] });
+  };
+
+  const [isSelect, setIsSelect] = useState(false);
+
+
+
+  const save = async () => {
+    try {
+      const values = await form.validateFields();
+
+      toggleEdit();
+      handleSave({ ...record, ...values });
+    } catch (errInfo) {
+      console.log('Save failed:', errInfo);
+    }
+  };
+
+  if (editable) {
+    return <Button variant={
+      isSelect ? "solid" : "outlined"
+    } onClick={() => {
+      setIsSelect(!isSelect);
+      save();
+    }} className='w-full' color="pink"></Button>;
+  }
+
+  return <td {...restProps}>{children}</td>;
 };
 
-export const KhungGioComponent = () => {
+interface IKhungGioProps {
+  room?: IRoom | null;
+  onChange?: (data: any) => void;
+}
 
-    const [dataSource, setDataSource] = useState<DataType[]>(dataSourceDefault);
+export const KhungGioComponent = ({ room, onChange }: IKhungGioProps) => {
 
-    const handleSave = (row: DataType) => {
-        const newData = [...dataSource];
-        const index = newData.findIndex((item) => row.key === item.key);
-        const item = newData[index];
-        newData.splice(index, 1, {
-            ...item,
-            ...row,
-        });
-        setDataSource(newData);
-    };
-
-    const columns = defaultColumns.map((col) => {
-        if (!col.editable) {
-            return col;
-        }
-        return {
-            ...col,
-            onCell: (record: DataType) => ({
-                record,
-                editable: col.editable,
-                dataIndex: col.dataIndex,
-                title: col.title,
-                handleSave,
-            }),
-        };
+  const [dataSource, setDataSource] = useState<DataType[]>(dataSourceDefault);
+  const [data, setData] = useState<Record<string, Record<string, string>>>({});
+  const handleSave = (row: DataType) => {
+    const newData = [...dataSource];
+    const index = newData.findIndex((item) => row.key === item.key);
+    const item = newData[index];
+    newData.splice(index, 1, {
+      ...item,
+      ...row,
     });
+    setDataSource(newData);
+  };
 
-    const components = {
-        body: {
-            row: EditableRow,
-            cell: EditableCell,
-        },
+  const columns = defaultColumns(data, setData).map((col) => {
+    if (!col.editable) {
+      return col;
+    }
+    return {
+      ...col,
+      onCell: (record: DataType) => ({
+        record,
+        editable: col.editable,
+        dataIndex: col.dataIndex,
+        title: col.title,
+        handleSave,
+      }),
     };
+  });
+
+  const components = {
+    body: {
+      row: EditableRow,
+      cell: EditableCell,
+    },
+  };
+
+  useEffect(() => {
+    if (onChange) {
+      onChange(data);
+    }
+  }, [data]);
 
 
-    return (
-        <Table<DataType>
-            pagination={false}
-            className='text-xs'
-            columns={columns as any}
-            dataSource={dataSource}
-            bordered
-            size="small"
-            scroll={{ y: 47 * 5 }}
-            components={components}
-            rowClassName={() => 'editable-row'}
-        />
+  return (
+    <Table<DataType>
+      pagination={false}
+      className='text-xs'
+      columns={columns as any}
+      dataSource={dataSource}
+      bordered
+      size="small"
+      scroll={{ y: 47 * 5 }}
+      components={components}
+      rowClassName={() => 'editable-row'}
+    />
 
-    )
+  )
 }

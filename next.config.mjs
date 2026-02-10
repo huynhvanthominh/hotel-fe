@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
+// use url other domain in development
 const nextConfig = {
-
   async rewrites() {
     return [
       {

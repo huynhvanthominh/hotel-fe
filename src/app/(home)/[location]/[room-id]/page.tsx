@@ -369,7 +369,9 @@ export default function RoomDetail() {
             <div className="flex flex-col gap-4">
               <div>Căn cước công dân</div>
               <div className="flex justify-around gap-4">
-                <div className="max-w-1/2">
+                <div className="max-w-1/2" style={{
+                  maxWidth: '50%'
+                }}>
                   <UploadCustom
                     onChange={(rs) => {
                       setImageUrl1(getUrlFromFileId(rs.id));
@@ -377,14 +379,16 @@ export default function RoomDetail() {
                     }}
                   >
                     {imageUrl1 ? (
-                      <img draggable={false} src={imageUrl1} alt="avatar" style={{ width: '90%' }} />
+                      <img draggable={false} src={imageUrl1} alt="avatar" style={{ width: '90%', maxWidth: '100%' }} />
                     ) : (
                       uploadButton1
                     )}
                   </UploadCustom>
 
                 </div>
-                <div className="max-w-1/2">
+                <div className="max-w-1/2" style={{
+                  maxWidth: '50%'
+                }}>
                   <UploadCustom
                     onChange={(rs) => {
                       setImageUrl2(getUrlFromFileId(rs.id));
@@ -392,7 +396,7 @@ export default function RoomDetail() {
                     }}
                   >
                     {imageUrl2 ? (
-                      <img draggable={false} src={imageUrl2} alt="avatar" style={{ width: '90%' }} />
+                      <img draggable={false} src={imageUrl2} alt="avatar" style={{ width: '90%', maxWidth: '100%' }} />
                     ) : (
                       uploadButton2
                     )}

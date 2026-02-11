@@ -213,15 +213,15 @@ const TraCuu = () => {
 
   const getStatusText = (status: string) => {
     switch (status) {
-      // case 'CONFIRMED':
-      //   return 'Đã xác nhận';
-      // case 'PENDING':
-      //   return 'Chờ xác nhận';
-      // case 'CANCELLED':
-      //   return 'Đã hủy';
-      // case 'COMPLETED':
-      // case 'SUCCESS':
-      //   return 'Hoàn thành';
+      case 'CONFIRMED':
+        return 'Đã xác nhận';
+      case 'PENDING':
+        return 'Chờ xác nhận';
+      case 'CANCELLED':
+        return 'Đã hủy';
+      case 'COMPLETED':
+      case 'SUCCESS':
+        return 'Thành công';
       default:
         return status;
     }

@@ -27,7 +27,7 @@ const NavMenuMobile = () => {
   const router = useRouter();
 
   return (
-    <div>
+    <div className="text-xl flex flex-col gap-4 font-bold">
       <div onClick={() => router.push('/tra-cuu')}>
         Tra cứu booking
       </div>
@@ -94,17 +94,19 @@ export default function UserLayout({
                 <div className="p-2 cursor-pointer" onClick={() => {
                   router.push("/")
                 }}>
-                  <Image src="/taga-home-icon.png" width={80} height={80} alt=""  />
+                  <Image src="/taga-home-icon.png" width={80} height={80} alt="" />
                 </div>
               </div>
             </div>
             <div className="md:hidden flex items-center">
               <Button icon={<MenuOutlined />} onClick={showDrawer} />
               <Drawer
-                title={<div>
+                style={{
+                  background: mainColor
+                }}
+                title={<div className="font-bold">
                   0901 220 012 - 0907 273 571
                 </div>}
-                closable={{ 'aria-label': 'Close Button' }}
                 onClose={onClose}
                 open={open}
               >

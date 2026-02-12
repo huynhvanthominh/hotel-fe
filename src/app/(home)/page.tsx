@@ -14,12 +14,20 @@ export default function HomePage() {
 
   useEffect(() => {
     officeApi.get().then(rs => {
-      setOffices(rs)
+      setOffices(rs);
+      if (rs.length === 1) {
+        router.push(rs[0].id)
+      }
     }).catch(err => {
       alert("Get office failed");
       console.error(err)
     })
   }, [])
+
+  if (offices.length === 0 || offices.length === 1) {
+    // loading  of antd
+    return <div className="h-screen"></div>
+  }
 
   return (
     <section>
@@ -53,7 +61,7 @@ export default function HomePage() {
         </div>
       </div>
 
-      <div className="">
+      {/* <div className="">
         <div className="">
           <Carousel className="" autoplay >
             {
@@ -67,7 +75,7 @@ export default function HomePage() {
             }
           </Carousel>
         </div>
-      </div>
+      </div> */}
 
     </section>
   );

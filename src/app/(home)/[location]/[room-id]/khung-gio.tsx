@@ -8,6 +8,7 @@ import { ColumnGroupType, ColumnType } from 'antd/es/table';
 import { IRoom } from '@/models/room';
 import { bookingApi } from '@/api/booking';
 import type { IBooking } from '@/models/booking';
+import { BOOKING_STATUS_ENUM } from '../../../../enums/booking-status.enum';
 dayjs.locale('vi');
 
 type FormInstance<T> = GetRef<typeof Form<T>>;
@@ -49,7 +50,7 @@ const ItemRender = (props: {
       className='w-full'
       color={isBooked ? "volcano" : "pink"}
       disabled={isBooked}
-      // style={isBooked ? { backgroundColor: '#e0e0e0', cursor: 'not-allowed', opacity: 0.6 } : {}}
+    // style={isBooked ? { backgroundColor: '#e0e0e0', cursor: 'not-allowed', opacity: 0.6 } : {}}
     ></Button>
   );
 
@@ -80,7 +81,7 @@ const defaultColumns: any = (room: IRoom, data: any, save: (data: any) => void, 
     ],
   },
   {
-    title: room?.name ||  '',
+    title: room?.name || '',
     width: 600,
     children: [
       {
@@ -258,8 +259,9 @@ export const KhungGioComponent = ({ room, roomId, onChange }: IKhungGioProps) =>
           const bookedSet = new Set<string>();
 
           // Only consider confirmed and pending bookings
-          const activeBookings = bookings.filter(b =>
-            b.status.toUpperCase() === 'CONFIRMED' || b.status.toUpperCase() === 'PENDING'
+          const activeBookings = bookings.filter(b => {
+            return [BOOKING_STATUS_ENUM.PENDING, BOOKING_STATUS_ENUM.SUCCESS].includes(b.status);
+          }
           );
 
           activeBookings.forEach(booking => {

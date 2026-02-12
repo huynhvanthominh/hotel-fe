@@ -1,5 +1,5 @@
 'use client'
-import { Button, Card, Carousel, message, Modal } from "antd"
+import { Button, Card, Carousel, message, Modal, Image } from "antd"
 import { type IRoom } from "@/models/room"
 import { useParams, useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
@@ -23,10 +23,13 @@ const CardItem = (props: ICardItemProps) => {
     <Card
       hoverable
       variant="borderless"
+      className="overflow-hidden"
       cover={
-        <img
+        <Image
+          width={300}
+          height={200}
           draggable={false}
-          alt="example"
+          className="rounded-xs"
           src={getUrlFromFileId(item.images[0]?.imageId)}
         />
       }
@@ -376,7 +379,7 @@ const TraCuu = () => {
                   </span>
                 </div>
               )}
-              
+
               {(data.services && data.services.length > 0) && (
                 <div className="flex justify-between items-center">
                   <span className="text-gray-700">Dịch vụ:</span>
@@ -388,7 +391,7 @@ const TraCuu = () => {
                   </span>
                 </div>
               )}
-              
+
               {(data.personCount && data.personCount > 2) && (
                 <div className="flex justify-between items-center">
                   <span className="text-gray-700">Phụ thu khách ({data.personCount - 2} khách):</span>
@@ -397,7 +400,7 @@ const TraCuu = () => {
                   </span>
                 </div>
               )}
-              
+
               <div className="border-t-2 border-pink-200 pt-2 mt-2">
                 <div className="flex justify-between items-center">
                   <span className="text-lg font-semibold">Tổng tiền:</span>
@@ -443,7 +446,7 @@ const TraCuu = () => {
           {/* Action Buttons */}
           <div className="flex gap-4 justify-end pt-4">
             {canPayBooking() && (
-              <Button 
+              <Button
                 type="primary"
                 onClick={handleOpenPaymentModal}
               >
@@ -451,8 +454,8 @@ const TraCuu = () => {
               </Button>
             )}
             {canCancelBooking() && (
-              <Button 
-                danger 
+              <Button
+                danger
                 loading={cancelling}
                 onClick={handleCancelBooking}
               >
@@ -602,21 +605,22 @@ export default function LocationPage() {
       </div> */}
 
       <div className="">
-        <div className="">
-          <Carousel className="" autoplay >
-            {
-              rooms.map((item) => {
-                return (
-                  <div key={item.id} className="!flex justify-around gap-8">
-                    <div>
-                      <CardItem item={item} />
-                    </div>
+        <div className="grid md:grid-cols-1 lg:grid-cols-3 md:gap-8 gap-2  md:p-4 p-0">
 
+          {/* <Carousel className="" autoplay > */}
+          {
+            rooms.map((item) => {
+              return (
+                <div key={item.id} className="!flex justify-around gap-8">
+                  <div>
+                    <CardItem item={item}  />
                   </div>
-                )
-              })
-            }
-          </Carousel>
+
+                </div>
+              )
+            })
+          }
+          {/* </Carousel> */}
         </div>
       </div >
 

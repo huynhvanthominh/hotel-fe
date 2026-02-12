@@ -305,7 +305,7 @@ export default function RoomDetail() {
               const times: any = [];
               Object.keys(data).forEach(key => {
                 const p = Object.entries(data[key]).filter(([_, value]) => value === 1).map(([key]) => key).map(item => {
-                  const a = ['time1', 'time2', 'time3'].includes(item) ? '3h' : 'Đêm';
+                  const a = ['time1', 'time2', 'time3'].includes(item) ? '3h' : 'dem';
                   times.push({ date: key, time: item, price: +(price?.[a] || 0) || 0 });
                   return +(price?.[a] || 0);
                 });

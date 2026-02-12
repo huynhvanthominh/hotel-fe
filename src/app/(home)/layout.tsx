@@ -94,7 +94,7 @@ export default function UserLayout({
                 <div className="p-2 cursor-pointer" onClick={() => {
                   router.push("/")
                 }}>
-                  <Image src="/taga-home-icon.png" width={80} height={80} alt="" />
+                  <Image src="/taga-home-icon.png" width={120} height={120} alt="" />
                 </div>
               </div>
             </div>

@@ -260,7 +260,7 @@ export const KhungGioComponent = ({ room, roomId, onChange }: IKhungGioProps) =>
 
           // Only consider confirmed and pending bookings
           const activeBookings = bookings.filter(b => {
-            return [BOOKING_STATUS_ENUM.PENDING, BOOKING_STATUS_ENUM.SUCCESS].includes(b.status);
+            return [BOOKING_STATUS_ENUM.PENDING, BOOKING_STATUS_ENUM.SUCCESS].includes(b.status as BOOKING_STATUS_ENUM);
           }
           );
 

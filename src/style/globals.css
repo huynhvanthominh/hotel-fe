@@ -68,3 +68,9 @@
     @apply bg-background text-foreground;
   }
 }
+
+
+button{
+  background: #E0b0FF !important;
+  color: 'fff' !important;
+}

@@ -12,8 +12,9 @@ import { STATUS_ENUM } from "@/enums/status.enum";
 import { BOOKING_STATUS_ENUM } from "@/enums/booking-status.enum";
 
 export default function TraCuuPage() {
+
   const { socket, isConnected, on, off } = useWebSocketContext();
-  const bookings = localStorage.getItem('bookings');
+  const [bookings, setBookings] = useState<string>();
   const [data, setData] = useState<IBooking | null>(null);
   const [loading, setLoading] = useState(true);
   const [cancelling, setCancelling] = useState(false);
@@ -169,6 +170,14 @@ export default function TraCuuPage() {
     };
     return timeMap[time] || time;
   };
+
+  useEffect(() => {
+    const bookingIds = localStorage.getItem('bookings');
+    if (bookingIds) {
+      setBookings(bookingIds);
+    }
+  }, []);
+
 
   if (typeof window === 'undefined') {
     return null; // Render nothing on the server

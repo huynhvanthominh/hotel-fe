@@ -9,6 +9,8 @@ export interface IOffice {
   email: string;
   status: STATUS_ENUM;
   imageId: string;
+  wifiPassword: string;
+  homePassword: string;
 }
 
-export interface ICreateOffice extends Omit<IOffice, 'id' | 'status'>{}
+export interface ICreateOffice extends Omit<IOffice, 'id' | 'status'> { }

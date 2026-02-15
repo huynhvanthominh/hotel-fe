@@ -1,3 +1,6 @@
+import { IOffice } from "@/models/office";
+import { IRoom } from "@/models/room";
+
 export enum BOOKING_STATUS_ENUM {
   PENDING = 'PENDING',
   CONFIRMED = 'CONFIRMED',
@@ -13,13 +16,6 @@ export interface IBookingDetail {
   price: string;
 }
 
-export interface IBookingRoom {
-  id: string;
-  officeId: string;
-  name: string;
-  type: string;
-  description: string;
-}
 
 export interface IServiceInBooking {
   id: string;
@@ -59,7 +55,9 @@ export interface IBooking {
   createdAt?: string;
   updatedAt?: string;
   expiresAt?: string | null;
-  room?: IBookingRoom;
+  wifi?: string;
+  homePassword?: string;
+  room?: IRoom;
   details?: IBookingDetail[];
   services?: IBookingServiceDetail[];
 }

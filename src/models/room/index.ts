@@ -1,3 +1,4 @@
+import { IOffice } from "@/models/office";
 import { IRoomImage } from "../room-image";
 
 export enum ROOM_PRICE_TYPE_ENUM {
@@ -24,4 +25,6 @@ export interface IRoom {
   images: IRoomImage[];
   prices: IRoomPrice[];
   amenities: IAmenity[];
+  password?: string;
+  office?: IOffice;
 }

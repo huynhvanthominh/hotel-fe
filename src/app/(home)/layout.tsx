@@ -117,7 +117,7 @@ export default function UserLayout({
               <NavMenu />
             </div>
           </div>
-          <Content className="md:w-8/12 w-full mx-auto">
+          <Content className="md:w-8/12 w-full mx-auto md:px-0 px-4">
             <Container>{children}</Container>
           </Content>
           <div className="flex justify-center" style={footerStyle}>

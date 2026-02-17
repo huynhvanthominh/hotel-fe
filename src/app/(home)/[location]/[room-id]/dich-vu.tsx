@@ -124,7 +124,7 @@ export const DichVuComponent = ({ onServiceChange }: DichVuProps) => {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="text-2xl font-semibold">Dịch vụ</div>
+      <h2>Dịch vụ</h2>
       
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
         {services.map((service) => {

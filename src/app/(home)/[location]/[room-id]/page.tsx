@@ -87,16 +87,16 @@ export default function RoomDetail() {
 
 
   const uploadButton1 = (
-    <button style={{ border: 0, background: 'none' }} type="button">
-      {<PlusOutlined />}
-      <div style={{ marginTop: 8 }}>Căn cước công dân mặt trước</div>
+    <button className="!bg-[unset] p-4 border border-black" type="button">
+      {<PlusOutlined className="text-black" />}
+      <div className="text-black">Căn cước công dân mặt trước</div>
     </button>
   );
 
   const uploadButton2 = (
-    <button style={{ border: 0, background: 'none' }} type="button">
-      {<PlusOutlined />}
-      <div style={{ marginTop: 8 }}>Căn cước công dân mặt sau</div>
+    <button className="!bg-[unset] p-4 border border-black" type="button">
+      {<PlusOutlined  className="text-black"/>}
+      <div className="text-black">Căn cước công dân mặt sau</div>
     </button>
   );
 
@@ -249,14 +249,14 @@ export default function RoomDetail() {
     <Form>
       <div className="flex md:flex-row flex-col gap-4">
         <div className="md:w-8/12 w-full flex flex-col gap-4">
-          <div> <h1 className="text-3xl">{room?.name}</h1></div>
+          <div> <h1>{room?.name}</h1></div>
           <div>
             <Carousel autoplay arrows >
               {
                 room?.images.map((item) => {
                   return (
                     <div key={item.id} className="!flex justify-center items-center bg-black">
-                      <Image src={getUrlFromFileId(item.imageId)} width={240} height={480} alt="room image" className="w-full object-cover" />
+                      <Image src={getUrlFromFileId(item.imageId)}  alt="room image" className="w-full object-cover" />
                     </div>
                   )
                 })
@@ -264,7 +264,7 @@ export default function RoomDetail() {
 
             </Carousel>
           </div>
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-4">
             <div className="text-2xl">
               Tiện  nghi phòng
             </div>

@@ -206,7 +206,7 @@ export default function TraCuuPage() {
         <div className="flex flex-col gap-6">
           {/* Header */}
           <div className="border-b pb-4">
-            <h1 className="text-3xl font-bold mb-2">Thông tin đặt phòng</h1>
+            <h1>Thông tin đặt phòng</h1>
             <div className="flex items-center gap-2">
               <span className="text-gray-600">Mã booking:</span>
               <span className="font-mono font-semibold">{data.id}</span>

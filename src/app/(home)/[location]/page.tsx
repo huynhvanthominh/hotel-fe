@@ -19,7 +19,6 @@ const CardItem = (props: ICardItemProps) => {
   const router = useRouter();
   const { location } = useParams();
 
-
   return (
     <Card
       hoverable
@@ -27,10 +26,8 @@ const CardItem = (props: ICardItemProps) => {
       className="overflow-hidden"
       cover={
         <Image
-          width={300}
-          height={200}
           draggable={false}
-          className="rounded-xs"
+          className="rounded-xs w-full h-48 object-cover"
           src={getUrlFromFileId(item.images[0]?.imageId)}
         />
       }

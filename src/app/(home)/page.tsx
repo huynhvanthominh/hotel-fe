@@ -33,7 +33,7 @@ export default function HomePage() {
     <section>
       <div className="py-4 gap-4">
         <div className="flex justify-center gap-4">
-          <h1 className="font-bold text-2xl">
+          <h1>
             Điểm đến của bạn
           </h1>
         </div>

@@ -36,7 +36,7 @@ export default function TraCuuPage() {
             setData(res);
           })
           .catch((err) => {
-            console.log(err);
+            console.error(err);
             message.error('Không thể tải thông tin đặt phòng');
           })
           .finally(() => {
@@ -105,7 +105,7 @@ export default function TraCuuPage() {
     if (!data || !isPaymentModalOpen) return;
 
     const handlePaymentConfirmed = (wsData: PaymentConfirmedData) => {
-      console.log('Payment confirmed received:', wsData);
+      console.info('Payment confirmed received:', wsData);
       if (wsData.bookingId === data.id) {
         setPaymentSuccess(true);
         message.success('Thanh toán thành công!');

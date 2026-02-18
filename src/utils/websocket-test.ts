@@ -45,12 +45,12 @@ export const testWebSocketConnection = (url: string = 'http://localhost:3000') =
   const socket = createTestSocket(url);
 
   socket.on('connect', () => {
-    console.log('✅ WebSocket connected successfully!');
-    console.log('Socket ID:', socket.id);
+    console.info('✅ WebSocket connected successfully!');
+    console.info('Socket ID:', socket.id);
   });
 
   socket.on('disconnect', () => {
-    console.log('❌ WebSocket disconnected');
+    console.info('❌ WebSocket disconnected');
   });
 
   socket.on('connect_error', (error) => {
@@ -58,11 +58,11 @@ export const testWebSocketConnection = (url: string = 'http://localhost:3000') =
   });
 
   socket.on('transaction_success', (data) => {
-    console.log('💰 Transaction success received:', data);
+    console.info('💰 Transaction success received:', data);
   });
 
   socket.on('payment_confirmed', (data) => {
-    console.log('✅ Payment confirmed:', data);
+    console.info('✅ Payment confirmed:', data);
   });
 
   return socket;
@@ -92,7 +92,7 @@ export const sendTestWebhook = async (
     });
 
     const data = await response.json();
-    console.log('✅ Test webhook sent successfully:', data);
+    console.info('✅ Test webhook sent successfully:', data);
     return data;
   } catch (error) {
     console.error('❌ Error sending test webhook:', error);

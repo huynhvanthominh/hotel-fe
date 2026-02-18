@@ -1,7 +1,7 @@
 import { Upload, message, type UploadProps, Button } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 import axiosClient from '@/api/aixos.config';
-import {IImage} from '@/models/image';
+import { IImage } from '@/models/image';
 
 interface IUploadProps {
   onChange?: (res: IImage) => void;
@@ -42,7 +42,7 @@ export function UploadCustom({ children, onChange }: IUploadProps) {
     },
     onChange(info) {
       if (info.file.status !== 'uploading') {
-        console.log(info.file, info.fileList);
+        console.info(info.file, info.fileList);
       }
       if (info.file.status === 'done') {
         message.success(`${info.file.name} file uploaded successfully`);

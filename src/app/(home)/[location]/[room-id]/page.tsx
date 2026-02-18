@@ -15,6 +15,7 @@ import { IRoom } from "@/models/room";
 import { useWebSocketContext } from "@/contexts/websocket-context";
 import { WS_EVENTS, type TransactionSuccessData, type PaymentConfirmedData } from "@/types/websocket.types";
 import { BOOKING_STATUS_ENUM, ICreateBookingRequest, IBookingService } from "@/models/booking";
+import { AmenityComponent, AmenityItem } from "@/components/amenity";
 
 const { TextArea } = Input;
 
@@ -22,36 +23,7 @@ type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];
 
 type FormInstance<T> = GetRef<typeof Form<T>>;
 
-const EditableContext = createContext<FormInstance<any> | null>(null);
 
-
-const contentStyle: React.CSSProperties = {
-  margin: 0,
-  height: '160px',
-  color: '#fff',
-  lineHeight: '160px',
-  textAlign: 'center',
-  background: '#364d79',
-};
-
-const getBase64 = (img: FileType, callback: (url: string) => void) => {
-  const reader = new FileReader();
-  reader.addEventListener('load', () => callback(reader.result as string));
-  reader.readAsDataURL(img);
-};
-
-
-const beforeUpload = (file: FileType) => {
-  const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
-  if (!isJpgOrPng) {
-    message.error('You can only upload JPG/PNG file!');
-  }
-  const isLt2M = file.size / 1024 / 1024 < 2;
-  if (!isLt2M) {
-    message.error('Image must smaller than 2MB!');
-  }
-  return isJpgOrPng && isLt2M;
-};
 
 export default function RoomDetail() {
 
@@ -95,7 +67,7 @@ export default function RoomDetail() {
 
   const uploadButton2 = (
     <button className="!bg-[unset] p-4 border border-black" type="button">
-      {<PlusOutlined  className="text-black"/>}
+      {<PlusOutlined className="text-black" />}
       <div className="text-black">Căn cước công dân mặt sau</div>
     </button>
   );
@@ -194,7 +166,7 @@ export default function RoomDetail() {
   // Listen for transaction success from WebSocket
   useEffect(() => {
     const handleTransactionSuccess = (data: TransactionSuccessData) => {
-      console.log('Transaction success received:', data);
+      console.info('Transaction success received:', data);
 
       // Check if this transaction is for current booking
       if (data.bookingId === bookingId) {
@@ -211,7 +183,7 @@ export default function RoomDetail() {
     };
 
     const handlePaymentConfirmed = (data: PaymentConfirmedData) => {
-      console.log('Payment confirmed received:', data);
+      console.info('Payment confirmed received:', data);
 
       if (data.bookingId === bookingId && data.confirmed) {
         setPaymentSuccess(true);
@@ -241,7 +213,7 @@ export default function RoomDetail() {
     roomApi.getById(roomId).then((res) => {
       setRoom(res);
     }).catch((err) => {
-      console.log(err);
+      console.error(err);
     })
   }, [roomId]);
 
@@ -256,7 +228,7 @@ export default function RoomDetail() {
                 room?.images.map((item) => {
                   return (
                     <div key={item.id} className="!flex justify-center items-center bg-black">
-                      <Image src={getUrlFromFileId(item.imageId)}  alt="room image" className="w-full object-cover" />
+                      <Image src={getUrlFromFileId(item.imageId)} alt="room image" className="w-full object-cover" />
                     </div>
                   )
                 })
@@ -269,12 +241,9 @@ export default function RoomDetail() {
               Tiện  nghi phòng
             </div>
             <div className="grid md:grid-cols-4 grid-cols-2 gap-4">
-              {roomListData[0].amenities.map((amenity, index) => {
+              {room?.amenities.map((item) => {
                 return (
-                  <div key={index} className="flex items-center gap-2">
-                    <img src={amenity.iconUrl} alt={amenity.name} className="w-6 h-6" width={24} height={24} />
-                    <span>{amenity.name}</span>
-                  </div>
+                  <AmenityItem key={item.id} url={getUrlFromFileId(item.amenity.imageId)} name={item.amenity.name} />
                 )
               })}
             </div>

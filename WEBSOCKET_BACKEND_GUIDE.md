@@ -34,12 +34,12 @@ const io = new Server(server, {
 const bookingSubscriptions = new Map();
 
 io.on('connection', (socket) => {
-  console.log('Client connected:', socket.id);
+  console.info('Client connected:', socket.id);
 
   // Handle booking subscription
   socket.on('subscribe_booking', (data) => {
     const { bookingId } = data;
-    console.log(`Client ${socket.id} subscribed to booking ${bookingId}`);
+    console.info(`Client ${socket.id} subscribed to booking ${bookingId}`);
     
     // Track which socket is waiting for which booking
     bookingSubscriptions.set(bookingId, socket.id);
@@ -49,14 +49,14 @@ io.on('connection', (socket) => {
   // Handle booking unsubscription
   socket.on('unsubscribe_booking', (data) => {
     const { bookingId } = data;
-    console.log(`Client ${socket.id} unsubscribed from booking ${bookingId}`);
+    console.info(`Client ${socket.id} unsubscribed from booking ${bookingId}`);
     
     bookingSubscriptions.delete(bookingId);
     socket.leave(`booking_${bookingId}`);
   });
 
   socket.on('disconnect', () => {
-    console.log('Client disconnected:', socket.id);
+    console.info('Client disconnected:', socket.id);
     
     // Clean up subscriptions
     for (const [bookingId, socketId] of bookingSubscriptions.entries()) {
@@ -88,7 +88,7 @@ app.post('/webhook/payment', express.json(), (req, res) => {
       confirmed: true,
     });
 
-    console.log(`Payment confirmed for booking ${bookingId}`);
+    console.info(`Payment confirmed for booking ${bookingId}`);
   }
 
   res.json({ success: true });
@@ -96,7 +96,7 @@ app.post('/webhook/payment', express.json(), (req, res) => {
 
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
-  console.log(`WebSocket server running on port ${PORT}`);
+  console.info(`WebSocket server running on port ${PORT}`);
 });
 ```
 
@@ -228,7 +228,7 @@ axios.post('http://localhost:3000/webhook/payment', {
   amount: 500000,
   status: 'success',
 })
-.then(res => console.log('Webhook sent:', res.data))
+.then(res => console.info('Webhook sent:', res.data))
 .catch(err => console.error('Error:', err));
 ```
 

@@ -1,4 +1,5 @@
 import { IOffice } from "@/models/office";
+import { IAmenity } from "../amenetiy";
 import { IRoomImage } from "../room-image";
 
 export enum ROOM_PRICE_TYPE_ENUM {
@@ -11,9 +12,11 @@ interface IRoomPrice {
   type: ROOM_PRICE_TYPE_ENUM
 }
 
-interface IAmenity {
-  name: string,
-  iconUrl: string
+export interface IRooomAmenity {
+  id: string;
+  roomId: string;
+  amenityId: string;
+  amenity: IAmenity;
 }
 
 export interface IRoom {
@@ -24,7 +27,7 @@ export interface IRoom {
   officeId: string;
   images: IRoomImage[];
   prices: IRoomPrice[];
-  amenities: IAmenity[];
+  amenities: IRooomAmenity[];
   password?: string;
   office?: IOffice;
 }

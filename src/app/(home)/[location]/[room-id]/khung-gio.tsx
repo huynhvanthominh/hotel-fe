@@ -92,7 +92,6 @@ const defaultColumns: any = (room: IRoom, data: any, save: (data: any) => void, 
         editable: true,
         render: (_: any, record: any) => {
           const isBooked = bookedSlots.has(`${record.ngay}_time1`);
-          console.log('isBooked time1:', isBooked, `${record.ngay}_time1`, bookedSlots);
           return <ItemRender dataKey1={record.ngay} dataKey2={"time1"} data={data} save={save} isBooked={isBooked} />;
         }
       },
@@ -221,7 +220,7 @@ const EditableCell: React.FC<React.PropsWithChildren<EditableCellProps>> = ({
       toggleEdit();
       handleSave({ ...record, ...values });
     } catch (errInfo) {
-      console.log('Save failed:', errInfo);
+      console.error('Save failed:', errInfo);
     }
   };
 

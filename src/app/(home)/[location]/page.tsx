@@ -10,86 +10,17 @@ import { bookingApi } from "@/api/booking"
 import { ExclamationCircleOutlined } from '@ant-design/icons'
 import { useWebSocketContext } from "@/contexts/websocket-context"
 import { WS_EVENTS, type PaymentConfirmedData } from "@/types/websocket.types"
+import { RoomCardItem } from "./components/room-card"
 
-interface ICardItemProps {
-  item: IRoom
-}
-const CardItem = (props: ICardItemProps) => {
-  const { item } = props;
-  const router = useRouter();
-  const { location } = useParams();
-
-  return (
-    <Card
-      hoverable
-      variant="borderless"
-      className="overflow-hidden"
-      cover={
-        <Image
-          draggable={false}
-          className="rounded-xs w-full h-48 object-cover"
-          src={getUrlFromFileId(item.images[0]?.imageId)}
-        />
-      }
-    >
-      <div className="flex flex-col gap-3">
-        <div className="text-xl font-bold">
-          {item.name}
-        </div>
-        <div className="flex gap-2">
-          {
-            [
-              'tien_nghi_may_chieu.png',
-              'tien_nghi_guong_king.png',
-              'tien_nghi_cua_so.png',
-              'tien_nghi_wifi.png',
-            ].map((item, index) => {
-              return (
-                <img src={item} key={index} width={24} />
-              )
-            })
-          }
-        </div>
-        <div className="flex gap-2">
-          <div>
-            <div>
-              Giá phòng
-            </div>
-            <div>
-              {(item.prices ?? []).map((item, index) => {
-                return (
-                  <div key={index} className="flex">
-                    <span className="font-bold">{parseFloat(item.price).toLocaleString('vi-VN')}</span>
-
-                    <span>/{item.type}</span>
-                  </div>
-                )
-              })}
-            </div>
-          </div>
-          <div className="flex flex-1 items-end justify-end">
-            <Button variant="solid" color="pink" onClick={() => router.push(`/${location}/${item.id}`)}>Đặt phòng</Button>
-          </div>
-        </div>
-
-      </div>
-    </Card>
-
-
-  )
-}
 
 
 export default function LocationPage() {
-
   const [rooms, setRooms] = useState<IRoom[]>([])
-  const { location } = useParams();
-
   useEffect(() => {
     roomApi.get().then((res) => {
       setRooms(res)
     }).catch((err) => {
-      console.log(err)
+      console.error(err)
     })
   }, [])
 
@@ -102,7 +33,7 @@ export default function LocationPage() {
               return (
                 <div key={item.id} className="!flex justify-around gap-8">
                   <div>
-                    <CardItem item={item} />
+                    <RoomCardItem item={item} />
                   </div>
 
                 </div>

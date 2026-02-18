@@ -96,7 +96,7 @@ io.to(`booking_${bookingId}`).emit('transaction_success', {
 ```javascript
 // In browser console
 const socket = io('http://localhost:3000');
-socket.on('connect', () => console.log('Connected!'));
+socket.on('connect', () => console.info('Connected!'));
 ```
 
 ### Simulate Payment Success

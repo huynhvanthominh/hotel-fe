@@ -1,4 +1,5 @@
-import { ROOM_PRICE_TYPE_ENUM, type IRoom } from "@/models/room"
+import { ROOM_PRICE_ENUM } from "@/enums/room-price.enum";
+import { type IRoom } from "@/models/room"
 
 export const roomListData = [1, 2, 3, 4, 5].map((item): IRoom => {
   const room: IRoom = {
@@ -7,14 +8,7 @@ export const roomListData = [1, 2, 3, 4, 5].map((item): IRoom => {
     type: "",
     description: "",
     officeId: "",
-    prices: [{
-      price: "150.000",
-      type: ROOM_PRICE_TYPE_ENUM.BA_GIO
-    }, {
-      price: "300.000",
-      type: ROOM_PRICE_TYPE_ENUM.QUA_DEM
-
-    }],
+    prices: [],
     images: [{
       imageId: 'https://localhome.vn/uploads/2026/01/z7414962436891_955d00bf36465a5323d3511874347680.jpg',
       id: "1",

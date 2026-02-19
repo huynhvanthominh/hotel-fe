@@ -41,7 +41,7 @@ export const DichVuComponent = ({ onServiceChange }: DichVuProps) => {
 
   const handleServiceToggle = (service: IService, checked: boolean) => {
     const newSelected = new Map(selectedServices);
-    
+
     if (checked) {
       newSelected.set(service.id, {
         service,
@@ -51,7 +51,7 @@ export const DichVuComponent = ({ onServiceChange }: DichVuProps) => {
     } else {
       newSelected.delete(service.id);
     }
-    
+
     setSelectedServices(newSelected);
     notifyChange(newSelected);
   };
@@ -59,7 +59,7 @@ export const DichVuComponent = ({ onServiceChange }: DichVuProps) => {
   const handleQuantityChange = (serviceId: string, quantity: number) => {
     const newSelected = new Map(selectedServices);
     const current = newSelected.get(serviceId);
-    
+
     if (current && quantity > 0) {
       newSelected.set(serviceId, {
         ...current,
@@ -115,7 +115,7 @@ export const DichVuComponent = ({ onServiceChange }: DichVuProps) => {
 
   if (services.length === 0) {
     return (
-      <Empty 
+      <Empty
         description="Chưa có dịch vụ nào"
         className="py-12"
       />
@@ -125,7 +125,7 @@ export const DichVuComponent = ({ onServiceChange }: DichVuProps) => {
   return (
     <div className="flex flex-col gap-4">
       <h2>Dịch vụ</h2>
-      
+
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
         {services.map((service) => {
           const isSelected = selectedServices.has(service.id);
@@ -143,10 +143,10 @@ export const DichVuComponent = ({ onServiceChange }: DichVuProps) => {
                   <img
                     alt={service.name}
                     src={getUrlFromFileId(service.imageId)}
-                    className="h-48 object-cover"
+                    className="h-72 object-cover"
                   />
                 ) : (
-                  <div className="h-48 bg-gray-200 flex items-center justify-center">
+                  <div className="h-72 bg-gray-200 flex items-center justify-center">
                     <span className="text-gray-400 text-4xl">🛎️</span>
                   </div>
                 )

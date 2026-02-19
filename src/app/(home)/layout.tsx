@@ -105,7 +105,7 @@ export default function UserLayout({
                   background: mainColor
                 }}
                 title={<div className="font-bold">
-                  0901 220 012 - 0907 273 571
+                  0797 201 097 - 0907 273 571
                 </div>}
                 onClose={onClose}
                 open={open}
@@ -133,7 +133,7 @@ export default function UserLayout({
                       Hotline:
                       <ul>
                         <li>
-                          0901 220 012
+                          0797 201 097
                         </li>
                         <li>
                           0907 273 571
@@ -145,9 +145,9 @@ export default function UserLayout({
                     <div className="p-2 md:block flex flex-col justify-center">
                       Chính sách
                       <ul className="flex flex-col justify-start">
-                        <li>
+                        {/* <li>
                           Chính sách bảo mật thông tin
-                        </li>
+                        </li> */}
                         <li>
                           Nội quy và quy định
                         </li>
@@ -155,9 +155,9 @@ export default function UserLayout({
                           Hình thức thanh toán
                         </li>
 
-                        <li>
+                        {/* <li>
                           Hướng dẫn sử dụng
-                        </li>
+                        </li> */}
                         <li>
                           Hướng dẫn tự check-in
                         </li>

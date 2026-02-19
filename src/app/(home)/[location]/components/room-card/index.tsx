@@ -42,7 +42,7 @@ export function RoomCardItem(props: ICardItemProps) {
                             {(item.prices ?? []).map((item, index) => {
                                 return (
                                     <div key={index} className="flex">
-                                        <span className="font-bold">{parseFloat(item.price).toLocaleString('vi-VN')}</span>
+                                        <span className="font-bold">{parseFloat(item.price.toString()).toLocaleString('vi-VN')}</span>
 
                                         <span>/{item.type}</span>
                                     </div>

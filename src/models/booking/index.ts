@@ -1,12 +1,5 @@
-import { IOffice } from "@/models/office";
+import { BOOKING_STATUS_ENUM } from "@/enums/booking-status.enum";
 import { IRoom } from "@/models/room";
-
-export enum BOOKING_STATUS_ENUM {
-  PENDING = 'PENDING',
-  CONFIRMED = 'CONFIRMED',
-  CANCELLED = 'CANCELLED',
-  COMPLETED = 'COMPLETED'
-}
 
 export interface IBookingDetail {
   id: string;

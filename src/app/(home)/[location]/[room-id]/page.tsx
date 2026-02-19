@@ -1,10 +1,8 @@
 'use client';
 import { Button, Carousel, Checkbox, Form, type GetProp, type GetRef, Image, Input, Modal, Select, type UploadProps, message } from "antd";
-import { roomListData } from "../../conts/room-list";
-import { KhungGioComponent } from "./khung-gio";
-import { DichVuComponent } from "./dich-vu";
-import { useState, createContext, useEffect } from "react";
-import { LoadingOutlined, PlusOutlined } from '@ant-design/icons';
+import { DichVuComponent } from "./components/dich-vu";
+import { useState, useEffect } from "react";
+import { PlusOutlined } from '@ant-design/icons';
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { roomApi } from "@/api/room";
@@ -14,8 +12,12 @@ import { UploadCustom } from "@/components/upload-file";
 import { IRoom } from "@/models/room";
 import { useWebSocketContext } from "@/contexts/websocket-context";
 import { WS_EVENTS, type TransactionSuccessData, type PaymentConfirmedData } from "@/types/websocket.types";
-import { BOOKING_STATUS_ENUM, ICreateBookingRequest, IBookingService } from "@/models/booking";
-import { AmenityComponent, AmenityItem } from "@/components/amenity";
+import { ICreateBookingRequest, IBookingService } from "@/models/booking";
+import { AmenityItem } from "@/components/amenity";
+import { KhungGioComponent } from "./components/time-box";
+import { BOOKING_STATUS_ENUM } from "@/enums/booking-status.enum";
+import { PriceComponent } from "./components/price";
+import { ROOM_PRICE_ENUM } from "@/enums/room-price.enum";
 
 const { TextArea } = Input;
 
@@ -188,11 +190,10 @@ export default function RoomDetail() {
       if (data.bookingId === bookingId && data.confirmed) {
         setPaymentSuccess(true);
         message.success('Thanh toán thành công! Booking của bạn đã được xác nhận.');
-
-        // Update booking status
-        bookingApi.update(bookingId, { status: BOOKING_STATUS_ENUM.CONFIRMED }).catch((err) => {
-          console.error('Failed to update booking status:', err);
-        });
+        // // Update booking status
+        // bookingApi.update(bookingId, { status: BOOKING_STATUS_ENUM.SUCCESS }).catch((err) => {
+        //   console.error('Failed to update booking status:', err);
+        // });
       }
     };
 
@@ -249,19 +250,7 @@ export default function RoomDetail() {
             </div>
           </div>
           <div className="flex flex-col gap-2">
-            <div className="text-2xl">
-              Bảng giá
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              {room?.prices.map((item, index) => {
-                return (
-                  <div key={index} className="flex">
-                    <span className="font-bold">{parseFloat(item.price).toLocaleString('vi-VN')}</span>
-                    <span>/{item.type}</span>
-                  </div>
-                )
-              })}
-            </div>
+            <PriceComponent prices={room?.prices ?? []} />
           </div>
           <div>
             <KhungGioComponent room={room} roomId={roomId} onChange={data => {
@@ -269,12 +258,13 @@ export default function RoomDetail() {
               const price = room?.prices.reduce((acc, curr) => {
                 acc[curr.type] = curr.price;
                 return acc;
-              }, {} as Record<string, string>);
+              }, {} as Record<ROOM_PRICE_ENUM, number>);
 
               const times: any = [];
+              console.log('Selected time slots:', data);
               Object.keys(data).forEach(key => {
                 const p = Object.entries(data[key]).filter(([_, value]) => value === 1).map(([key]) => key).map(item => {
-                  const a = ['time1', 'time2', 'time3'].includes(item) ? '3h' : 'dem';
+                  const a: ROOM_PRICE_ENUM = ['time1', 'time2', 'time3'].includes(item) ? ROOM_PRICE_ENUM.HOUR : ROOM_PRICE_ENUM.DAY;
                   times.push({ date: key, time: item, price: +(price?.[a] || 0) || 0 });
                   return +(price?.[a] || 0);
                 });
@@ -390,10 +380,10 @@ export default function RoomDetail() {
                 }} rows={4} placeholder="Ghi chú thêm cho Home (nếu có)" />
               </div>
 
-              <div>
+              <div >
                 <Checkbox onChange={e => {
                   setCheck1(e.target.checked);
-                }}>
+                }} className="text-[#C264FF]">
                   Xác nhận mọi người đã đủ tuổi vị thành niên, đồng ý rời khỏi và không được hoàn tiền nếu có dấu hiệu tệ nạn xã hội.
                 </Checkbox>
                 <Checkbox onChange={e => {
@@ -455,6 +445,9 @@ export default function RoomDetail() {
                       {(payload.totalPrice + serviceTotalPrice + extraGuestCharge).toLocaleString('vi-VN')}đ
                     </span>
                   </div>
+                </div>
+                <div>
+                  <p>Lưu ý: Khách đặt phòng 2 combo trở lên sẽ được giảm 10% tổng bill</p>
                 </div>
               </div>
             </div>

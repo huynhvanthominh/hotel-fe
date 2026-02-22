@@ -5,6 +5,7 @@ import { ROOM_PRICE_ENUM } from "@/enums/room-price.enum";
 import {
     SunOutlined
 } from '@ant-design/icons';
+import { ITimeBoxItem } from "..";
 
 interface IUseColumnProps {
     room: IRoom | null | undefined;
@@ -67,9 +68,11 @@ export const useColumn = (props: IUseColumnProps) => {
                     key: item.id,
                     width: 100,
                     editable: true,
-                    render: (_: any, record: any) => {
-                        const isBooked = bookedSlots.has(`${record.ngay}_${item.id}`);
-                        return <ItemRender dataKey1={record.ngay} dataKey2={item.id} data={data} save={save} isBooked={isBooked} />;
+                    render: (_: any, record: ITimeBoxItem) => {
+                        const time = `${item.from}-${item.to}`;
+                        const price = record[time];
+                        const isBooked = bookedSlots.has(`${record.ngay}_${time}`);
+                        return <ItemRender price={Number(price)} dataKey1={record.ngay} dataKey2={time} data={data} save={save} isBooked={isBooked} />;
                     }
                 }
             })

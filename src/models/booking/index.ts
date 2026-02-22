@@ -89,6 +89,7 @@ export interface ICreateBookingRequest {
   note: string,
   totalPrice: number,
   roomId: string,
+  discountPercent?: number;
   times: IBookingTime[],
   services?: IBookingService[]
 }

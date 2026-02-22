@@ -15,15 +15,12 @@ import { WS_EVENTS, type TransactionSuccessData, type PaymentConfirmedData } fro
 import { ICreateBookingRequest, IBookingService } from "@/models/booking";
 import { AmenityItem } from "@/components/amenity";
 import { KhungGioComponent } from "./components/time-box";
-import { BOOKING_STATUS_ENUM } from "@/enums/booking-status.enum";
 import { PriceComponent } from "./components/price";
 import { ROOM_PRICE_ENUM } from "@/enums/room-price.enum";
 
 const { TextArea } = Input;
 
-type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];
 
-type FormInstance<T> = GetRef<typeof Form<T>>;
 
 
 
@@ -254,26 +251,39 @@ export default function RoomDetail() {
           </div>
           <div>
             <KhungGioComponent room={room} roomId={roomId} onChange={data => {
-              let total = 0;
-              const price = room?.prices.reduce((acc, curr) => {
-                acc[curr.type] = curr.price;
-                return acc;
-              }, {} as Record<ROOM_PRICE_ENUM, number>);
 
-              const times: any = [];
-              console.log('Selected time slots:', data);
-              Object.keys(data).forEach(key => {
-                const p = Object.entries(data[key]).filter(([_, value]) => value === 1).map(([key]) => key).map(item => {
-                  const a: ROOM_PRICE_ENUM = ['time1', 'time2', 'time3'].includes(item) ? ROOM_PRICE_ENUM.HOUR : ROOM_PRICE_ENUM.DAY;
-                  times.push({ date: key, time: item, price: +(price?.[a] || 0) || 0 });
-                  return +(price?.[a] || 0);
-                });
+              const times: {
+                date: string;
+                time: string;
+                price: number;
+              }[] = [];
+              Object.entries(data).forEach(([date, timeKey]) => {
+                Object.entries(timeKey).forEach(([time, value]) => {
+                  if (!value) {
+                    return;
+                  }
+                  times.push({
+                    date,
+                    time,
+                    price: value
+                  })
+                })
+              })
+              const totalSelect = times.length;
+              //  show total and discount
 
-                total += p.reduce((a, b) => +a + +b, 0);
-              });
+              const totalPrice = times.reduce((sum, t) => sum + t.price, 0);
+              let discountPercent = 0;
+              if (totalSelect >= 2) {
+                discountPercent = 10; // 10% discount
+              } else {
+                discountPercent = 0;
+              }
+
               setPayload({
                 ...payload,
-                totalPrice: total,
+                totalPrice: totalPrice,
+                discountPercent,
                 times
               })
             }} />
@@ -438,11 +448,20 @@ export default function RoomDetail() {
                   </div>
                 )}
 
+                {payload.discountPercent && payload.discountPercent > 0 ? (
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-700">Giảm giá ({payload.discountPercent}%):</span>
+                    <span className="font-semibold text-green-600">
+                      -{((payload.totalPrice + serviceTotalPrice + extraGuestCharge) * payload.discountPercent / 100).toLocaleString('vi-VN')}đ
+                    </span>
+                  </div>
+                ) : <></>}
+
                 <div className="border-t-2 border-pink-200 pt-2 mt-2">
                   <div className="flex justify-between items-center">
                     <span className="text-lg font-bold text-gray-800">Tổng cộng:</span>
                     <span className="text-2xl font-bold text-pink-600">
-                      {(payload.totalPrice + serviceTotalPrice + extraGuestCharge).toLocaleString('vi-VN')}đ
+                      {(((payload.totalPrice + serviceTotalPrice + extraGuestCharge)) - ((payload.totalPrice + serviceTotalPrice + extraGuestCharge) * (payload.discountPercent ?? 0) / 100)).toLocaleString('vi-VN')}đ
                     </span>
                   </div>
                 </div>
@@ -510,7 +529,8 @@ export default function RoomDetail() {
                 {extraGuestCharge > 0 && (
                   <p>Phụ thu khách: {extraGuestCharge.toLocaleString('vi-VN')}đ</p>
                 )}
-                <p className="font-semibold mt-1">Tổng cộng: {(payload.totalPrice + serviceTotalPrice + extraGuestCharge).toLocaleString('vi-VN')}đ</p>
+
+                <p className="font-semibold mt-1">Tổng cộng: {((payload.totalPrice + serviceTotalPrice + extraGuestCharge) - ((payload.totalPrice + serviceTotalPrice + extraGuestCharge) * (payload.discountPercent ?? 0) / 100)).toLocaleString('vi-VN')}đ</p>
               </div>
             </>
           )}

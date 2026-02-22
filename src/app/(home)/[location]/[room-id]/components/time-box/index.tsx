@@ -3,7 +3,7 @@ import { Button, Form, Table, Tooltip } from 'antd';
 import type { GetRef, InputRef, TableColumnsType } from 'antd';
 import dayjs from 'dayjs';
 import 'dayjs/locale/vi';
-import { IRoom } from '@/models/room';
+import { IRoom, IRoomPrice } from '@/models/room';
 import { bookingApi } from '@/api/booking';
 import { type IBooking } from '@/models/booking';
 import { BOOKING_STATUS_ENUM } from '@/enums/booking-status.enum';
@@ -14,23 +14,18 @@ type FormInstance<T> = GetRef<typeof Form<T>>;
 
 const EditableContext = React.createContext<FormInstance<any> | null>(null);
 
-interface DataType {
-  key: React.Key;
+export interface ITimeBoxItem {
+  [key: string]: number | string;
   name: string;
   thu: string;
   ngay: string;
-  building: string;
-  number: number;
-  companyAddress: string;
-  companyName: string;
-  gender: string;
 }
 
 
 
 const start = dayjs();
 const end = dayjs().add(1, 'month');
-const dataSourceDefault: DataType[] = [];
+
 
 function formatDayLabel(date: string | Date) {
   const d = dayjs(date);
@@ -46,18 +41,29 @@ function formatDayLabel(date: string | Date) {
 
   return `T${day + 1}`;
 }
-for (let date = start; date.isBefore(end); date = date.add(1, 'day')) {
-  const item: any = {
-    thu: formatDayLabel(date.toDate()),
-    ngay: date.format('DD-MM-YYYY'),
-    key: date.format('DDMMYYYY'),
+const dataSourceDefault = (params: { prices: IRoomPrice[] }) => {
+  const { prices } = params;
+  const data = [];
+  for (let date = start; date.isBefore(end); date = date.add(1, 'day')) {
+    const item: any = {
+      thu: formatDayLabel(date.toDate()),
+      ngay: date.format('DD-MM-YYYY'),
+      key: date.format('DDMMYYYY'),
+    }
+    const timeItems = prices.map(item => {
+      return {
+        key: `${item.from}-${item.to}`,
+        value: item.price
+      }
+    })
+    timeItems
+      .forEach(timeItem => {
+        (item as any)[timeItem.key] = timeItem.value;
+      });
+    data.push(item);
   }
-  const timeItems = [{ key: 'time1', value: '' }, { key: 'time2', value: '' }, { key: 'time3', value: '' }, { key: 'time4', value: '' }];
-  timeItems
-    .forEach(timeItem => {
-      (item as any)[timeItem.key] = timeItem.value;
-    });
-  dataSourceDefault.push(item);
+
+  return data;
 }
 
 interface EditableRowProps {
@@ -78,9 +84,9 @@ const EditableRow: React.FC<EditableRowProps> = ({ index, ...props }) => {
 interface EditableCellProps {
   title: React.ReactNode;
   editable: boolean;
-  dataIndex: keyof DataType;
-  record: DataType;
-  handleSave: (record: DataType) => void;
+  dataIndex: keyof ITimeBoxItem;
+  record: ITimeBoxItem;
+  handleSave: (record: ITimeBoxItem) => void;
 }
 
 const EditableCell: React.FC<React.PropsWithChildren<EditableCellProps>> = ({
@@ -137,12 +143,12 @@ const EditableCell: React.FC<React.PropsWithChildren<EditableCellProps>> = ({
 interface IKhungGioProps {
   room?: IRoom | null;
   roomId?: string;
-  onChange?: (data: any) => void;
+  onChange?: (data: Record<string, Record<string, number>>) => void;
 }
 
 export const KhungGioComponent = ({ room, roomId, onChange }: IKhungGioProps) => {
-
-  const [dataSource, setDataSource] = useState<DataType[]>(dataSourceDefault);
+  const { prices = [] } = room || {};
+  const [dataSource, setDataSource] = useState<ITimeBoxItem[]>([]);
   // date => time => price
   const [data, setData] = useState<Record<string, Record<string, number>>>({});
   const [bookedSlots, setBookedSlots] = useState<Set<string>>(new Set());
@@ -158,6 +164,7 @@ export const KhungGioComponent = ({ room, roomId, onChange }: IKhungGioProps) =>
 
           // Only consider confirmed and pending bookings
           const activeBookings = bookings.filter(b => {
+            return true;
             return [BOOKING_STATUS_ENUM.PENDING, BOOKING_STATUS_ENUM.SUCCESS].includes(b.status as BOOKING_STATUS_ENUM);
           }
           );
@@ -181,7 +188,7 @@ export const KhungGioComponent = ({ room, roomId, onChange }: IKhungGioProps) =>
         });
     }
   }, [roomId]);
-  const handleSave = (row: DataType) => {
+  const handleSave = (row: ITimeBoxItem) => {
     const newData = [...dataSource];
     const index = newData.findIndex((item) => row.key === item.key);
     const item = newData[index];
@@ -199,7 +206,7 @@ export const KhungGioComponent = ({ room, roomId, onChange }: IKhungGioProps) =>
     }
     return {
       ...col,
-      onCell: (record: DataType) => ({
+      onCell: (record: ITimeBoxItem) => ({
         record,
         editable: col.editable,
         dataIndex: col.dataIndex,
@@ -222,8 +229,12 @@ export const KhungGioComponent = ({ room, roomId, onChange }: IKhungGioProps) =>
     }
   }, [data]);
 
+  useEffect(() => {
+    setDataSource(dataSourceDefault({ prices }));
+  }, [prices])
+
   return (
-    <Table<DataType>
+    <Table<ITimeBoxItem>
       pagination={false}
       className='text-xs'
       columns={columns as any}

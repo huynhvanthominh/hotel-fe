@@ -5,7 +5,7 @@ interface IPriceComponentProps {
     prices: IRoomPrice[]
 }
 
-const mapType = (item: IRoomPrice): string => {
+export const mapPriceType = (item: IRoomPrice): string => {
     const { type, from, to } = item;
     switch (type.toString()) {
         case ROOM_PRICE_ENUM.HOUR.toString():
@@ -30,7 +30,7 @@ export function PriceComponent({ prices }: IPriceComponentProps) {
                     return (
                         <div key={index} className="flex gap-1">
                             <span className="font-bold text-[#D697FF]">{parseFloat(item.price.toString()).toLocaleString('vi-VN')}</span>
-                            <span>đ/{mapType(item)}</span>
+                            <span>đ/{mapPriceType(item)}</span>
                         </div>
                     )
                 })}

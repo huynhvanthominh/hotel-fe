@@ -3,6 +3,7 @@ import { getUrlFromFileId } from "@/utils/get-url-from-file-id";
 import { Card, Button, Image } from "antd";
 import { useParams, useRouter } from "next/navigation";
 import { AmenityComponent } from "../../../../../components/amenity";
+import { mapPriceType } from "../../[room-id]/components/price";
 
 interface ICardItemProps {
     item: IRoom
@@ -44,7 +45,7 @@ export function RoomCardItem(props: ICardItemProps) {
                                     <div key={index} className="flex">
                                         <span className="font-bold">{parseFloat(item.price.toString()).toLocaleString('vi-VN')}</span>
 
-                                        <span>/{item.type}</span>
+                                        <span>/{mapPriceType(item)}</span>
                                     </div>
                                 )
                             })}

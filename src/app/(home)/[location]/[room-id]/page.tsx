@@ -3,7 +3,7 @@ import { Button, Carousel, Checkbox, Form, type GetProp, type GetRef, Image, Inp
 import { DichVuComponent } from "./components/dich-vu";
 import { useState, useEffect } from "react";
 import { PlusOutlined } from '@ant-design/icons';
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { roomApi } from "@/api/room";
 import { getUrlFromFileId } from "@/utils/get-url-from-file-id";
@@ -16,7 +16,6 @@ import { ICreateBookingRequest, IBookingService } from "@/models/booking";
 import { AmenityItem } from "@/components/amenity";
 import { KhungGioComponent } from "./components/time-box";
 import { PriceComponent } from "./components/price";
-import { ROOM_PRICE_ENUM } from "@/enums/room-price.enum";
 
 const { TextArea } = Input;
 
@@ -25,7 +24,7 @@ const { TextArea } = Input;
 
 
 export default function RoomDetail() {
-
+  const router = useRouter();
   const { socket, isConnected, on, off, emit } = useWebSocketContext();
   const [bookingId, setBookingId] = useState<string>();
   const [paymentSuccess, setPaymentSuccess] = useState(false);
@@ -153,7 +152,8 @@ export default function RoomDetail() {
   useEffect(() => {
     if (bookingId) {
       showModal();
-
+      const old = localStorage.getItem('bookings');
+      localStorage.setItem('bookings', JSON.stringify([bookingId, ...(old ? JSON.parse(old) : [])]));
       // Emit to server that we're waiting for this booking's payment
       if (isConnected && socket) {
         emit(WS_EVENTS.SUBSCRIBE_BOOKING, { bookingId });
@@ -171,9 +171,8 @@ export default function RoomDetail() {
       if (data.bookingId === bookingId) {
         setPaymentSuccess(true);
         message.success('Thanh toán thành công! Booking của bạn đã được xác nhận.');
-        const old = localStorage.getItem('bookings');
-        localStorage.setItem('bookings', JSON.stringify([data.bookingId, ...(old ? JSON.parse(old) : [])]));
 
+        router.push('/tra-cuu');
         // Update booking status
         // bookingApi.update(bookingId, { status: BOOKING_STATUS_ENUM.CONFIRMED }).catch((err) => {
         //   console.error('Failed to update booking status:', err);

@@ -8,7 +8,6 @@ import { message, Modal, Card } from "antd";
 import { useState, useEffect } from "react";
 import { Button } from "antd";
 import { ExclamationCircleOutlined } from '@ant-design/icons';
-import { STATUS_ENUM } from "@/enums/status.enum";
 import { BOOKING_STATUS_ENUM } from "@/enums/booking-status.enum";
 
 export default function TraCuuPage() {
@@ -27,8 +26,10 @@ export default function TraCuuPage() {
   };
 
   useEffect(() => {
+    console.log('TraCuuPage mounted. Checking localStorage for bookings...', bookings);
     if (bookings) {
       const bookingIds = JSON.parse(bookings);
+      console.log('Parsed booking IDs:', bookingIds);
       if (bookingIds && bookingIds.length > 0) {
         setLoading(true);
         bookingApi.getById(bookingIds[0])
@@ -48,7 +49,7 @@ export default function TraCuuPage() {
     } else {
       setLoading(false);
     }
-  }, []);
+  }, [bookings]);
 
   const handleCancelBooking = () => {
     if (!data) return;

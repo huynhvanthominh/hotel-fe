@@ -385,7 +385,7 @@ export default function TraCuuPage() {
             </div>
           </div>
 
-          {/* CCCD Images */}
+          {/* CCCD Images */}ing
           {/* {(data.cccdFrontImageId || data.cccdBackImageId) && (
             <div>
               <h2 className="text-xl font-semibold mb-3">Căn cước công dân</h2>

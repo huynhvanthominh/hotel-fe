@@ -386,7 +386,7 @@ export default function TraCuuPage() {
           </div>
 
           {/* CCCD Images */}
-          {(data.cccdFrontImageId || data.cccdBackImageId) && (
+          {/* {(data.cccdFrontImageId || data.cccdBackImageId) && (
             <div>
               <h2 className="text-xl font-semibold mb-3">Căn cước công dân</h2>
               <div className="grid md:grid-cols-2 gap-4">
@@ -412,7 +412,7 @@ export default function TraCuuPage() {
                 )}
               </div>
             </div>
-          )}
+          )} */}
 
           {/* Action Buttons */}
           <div className="flex gap-4 justify-end pt-4">

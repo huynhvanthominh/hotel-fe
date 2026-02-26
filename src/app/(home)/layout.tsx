@@ -32,7 +32,7 @@ const NavMenuMobile = () => {
         Tra cứu booking
       </div>
       <div>
-        Nhường quyền
+        Nhượng quyền
       </div>
       <div>
         Liên hệ
@@ -50,7 +50,7 @@ const NavMenu = () => {
         Tra cứu booking
       </div>
       <div>
-        Nhường quyền
+        Nhượng quyền
       </div>
       <div>
         Liên hệ

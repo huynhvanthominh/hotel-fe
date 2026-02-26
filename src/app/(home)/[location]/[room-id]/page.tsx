@@ -514,7 +514,7 @@ export default function RoomDetail() {
                 {isConnected ? "● Đang chờ xác nhận thanh toán..." : "○ Đang kết nối..."}
               </div>
               <img
-                src={`https://payment.pay2s.vn/quicklink/${process.env.NEXT_PUBLIC_BANK_BRANCH}/${process.env.NEXT_PUBLIC_BANK_ACCOUNT}/${process.env.NEXT_PUBLIC_BANK_NAME}?amount=${payload.totalPrice + serviceTotalPrice + extraGuestCharge}&is_mask=0&bg=0&memo=${hashToBase64(bookingId || '')}`}
+                src={`https://payment.pay2s.vn/quicklink/${process.env.NEXT_PUBLIC_BANK_BRANCH}/${process.env.NEXT_PUBLIC_BANK_ACCOUNT}/${process.env.NEXT_PUBLIC_BANK_NAME}?amount=${payload.totalPrice + serviceTotalPrice + extraGuestCharge}&is_mask=0&bg=0&memo=TAGAHOME${hashToBase64(bookingId || '')}`}
                 alt="QR Code thanh toán"
                 width={400}
                 height={400}

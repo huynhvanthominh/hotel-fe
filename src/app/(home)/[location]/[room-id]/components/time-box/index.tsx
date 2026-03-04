@@ -146,7 +146,7 @@ interface IKhungGioProps {
   onChange?: (data: Record<string, Record<string, number>>) => void;
 }
 
-export const KhungGioComponent = ({ room, roomId, onChange }: IKhungGioProps) => {
+export const TimeBoxComponent = ({ room, roomId, onChange }: IKhungGioProps) => {
   const { prices = [] } = room || {};
   const [dataSource, setDataSource] = useState<ITimeBoxItem[]>([]);
   // date => time => price

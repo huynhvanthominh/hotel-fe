@@ -72,7 +72,8 @@
   }
 }
 
-body, *{
+body,
+* {
   font-family: Be Vietnam Pro, sans-serif;
 }
 
@@ -81,7 +82,12 @@ button {
   color: #fff !important;
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-weight: 900;
 }
 
@@ -113,4 +119,11 @@ h5 {
 
 h6 {
   font-size: 0.75rem;
+}
+
+.tra-cuu h1,
+p,
+h2,
+span {
+  font-size: 0.75rem !important;
 }

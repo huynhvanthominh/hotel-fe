@@ -1,6 +1,6 @@
 'use client';
 import { Button, Carousel, Checkbox, Form, type GetProp, type GetRef, Image, Input, Modal, Select, type UploadProps, message } from "antd";
-import { DichVuComponent } from "./components/dich-vu";
+import { ServiceComponent } from "./components/service";
 import { useState, useEffect } from "react";
 import { PlusOutlined } from '@ant-design/icons';
 import { useParams, useRouter } from "next/navigation";
@@ -14,7 +14,7 @@ import { useWebSocketContext } from "@/contexts/websocket-context";
 import { WS_EVENTS, type TransactionSuccessData, type PaymentConfirmedData } from "@/types/websocket.types";
 import { ICreateBookingRequest, IBookingService } from "@/models/booking";
 import { AmenityItem } from "@/components/amenity";
-import { KhungGioComponent } from "./components/time-box";
+import { TimeBoxComponent } from "./components/time-box";
 import { PriceComponent } from "./components/price";
 
 const { TextArea } = Input;
@@ -249,12 +249,13 @@ export default function RoomDetail() {
             <PriceComponent prices={room?.prices ?? []} />
           </div>
           <div>
-            <KhungGioComponent room={room} roomId={roomId} onChange={data => {
+            <TimeBoxComponent room={room} roomId={roomId} onChange={data => {
 
               const times: {
                 date: string;
                 time: string;
                 price: number;
+                roomId: string;
               }[] = [];
               Object.entries(data).forEach(([date, timeKey]) => {
                 Object.entries(timeKey).forEach(([time, value]) => {
@@ -264,7 +265,8 @@ export default function RoomDetail() {
                   times.push({
                     date,
                     time,
-                    price: value
+                    price: value,
+                    roomId
                   })
                 })
               })
@@ -288,7 +290,7 @@ export default function RoomDetail() {
             }} />
           </div>
           <div>
-            <DichVuComponent
+            <ServiceComponent
               onServiceChange={(services) => {
                 setSelectedServices(services);
                 const total = services.reduce((sum, s) => sum + s.price, 0);
@@ -337,8 +339,12 @@ export default function RoomDetail() {
             <div className="flex flex-col gap-4">
               <div>Căn cước công dân</div>
               <div className="flex justify-around gap-4">
-                <div className="max-w-1/2" style={{
-                  maxWidth: '50%'
+                <div style={{
+                  maxWidth: '50%',
+                  maxHeight: '200px',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
                 }}>
                   <UploadCustom
                     onChange={(rs) => {
@@ -354,8 +360,12 @@ export default function RoomDetail() {
                   </UploadCustom>
 
                 </div>
-                <div className="max-w-1/2" style={{
-                  maxWidth: '50%'
+                <div style={{
+                  maxWidth: '50%',
+                  maxHeight: '200px',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
                 }}>
                   <UploadCustom
                     onChange={(rs) => {

@@ -16,6 +16,8 @@ import { ICreateBookingRequest, IBookingService } from "@/models/booking";
 import { AmenityItem } from "@/components/amenity";
 import { TimeBoxComponent } from "./components/time-box";
 import { PriceComponent } from "./components/price";
+import { BOOKING_STATUS_ENUM } from "@/enums/booking-status.enum";
+import { IUploadCCCDData, UploadCCCD } from "@/components/cccd-camera";
 
 const { TextArea } = Input;
 
@@ -154,13 +156,26 @@ export default function RoomDetail() {
       showModal();
       const old = localStorage.getItem('bookings');
       localStorage.setItem('bookings', JSON.stringify([bookingId, ...(old ? JSON.parse(old) : [])]));
+
       // Emit to server that we're waiting for this booking's payment
       if (isConnected && socket) {
         emit(WS_EVENTS.SUBSCRIBE_BOOKING, { bookingId });
       }
     }
+  }, [bookingId, isConnected]);
 
-  }, [bookingId, isConnected])
+  // Auto-redirect to tra-cuu page after paymentSuccess
+  useEffect(() => {
+    if (paymentSuccess) {
+      // Close modal and reset state after redirect
+      setTimeout(() => {
+        setIsModalOpen(false);
+        setBookingId(undefined);
+        setPaymentSuccess(false);
+        router.push('/tra-cuu');
+      }, 1000); // 1s delay for user to see success
+    }
+  }, [paymentSuccess, router]);
 
   // Listen for transaction success from WebSocket
   useEffect(() => {
@@ -186,6 +201,7 @@ export default function RoomDetail() {
       if (data.bookingId === bookingId && data.confirmed) {
         setPaymentSuccess(true);
         message.success('Thanh toán thành công! Booking của bạn đã được xác nhận.');
+        router.push('/tra-cuu');
         // // Update booking status
         // bookingApi.update(bookingId, { status: BOOKING_STATUS_ENUM.SUCCESS }).catch((err) => {
         //   console.error('Failed to update booking status:', err);
@@ -213,6 +229,25 @@ export default function RoomDetail() {
       console.error(err);
     })
   }, [roomId]);
+
+
+  useEffect(() => {
+    const handleFocus = () => {
+      if (bookingId) {
+        bookingApi.getById(bookingId).then(rs => {
+          if (rs.status === BOOKING_STATUS_ENUM.SUCCESS) {
+            router.push('/tra-cuu')
+          }
+        })
+      }
+    }
+
+    window.addEventListener("focus", handleFocus)
+    return () => window.removeEventListener("focus", handleFocus)
+
+
+  }, [])
+
 
   return (
     <Form>
@@ -338,49 +373,12 @@ export default function RoomDetail() {
             </p>
             <div className="flex flex-col gap-4">
               <div>Căn cước công dân</div>
-              <div className="flex justify-around gap-4">
-                <div style={{
-                  maxWidth: '50%',
-                  maxHeight: '200px',
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                }}>
-                  <UploadCustom
-                    onChange={(rs) => {
-                      setImageUrl1(getUrlFromFileId(rs.id));
-                      setPayload({ ...payload, cccdFrontImageId: rs.id });
-                    }}
-                  >
-                    {imageUrl1 ? (
-                      <img draggable={false} src={imageUrl1} alt="avatar" style={{ width: '90%', maxWidth: '100%' }} />
-                    ) : (
-                      uploadButton1
-                    )}
-                  </UploadCustom>
-
-                </div>
-                <div style={{
-                  maxWidth: '50%',
-                  maxHeight: '200px',
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                }}>
-                  <UploadCustom
-                    onChange={(rs) => {
-                      setImageUrl2(getUrlFromFileId(rs.id));
-                      setPayload({ ...payload, cccdBackImageId: rs.id });
-                    }}
-                  >
-                    {imageUrl2 ? (
-                      <img draggable={false} src={imageUrl2} alt="avatar" style={{ width: '90%', maxWidth: '100%' }} />
-                    ) : (
-                      uploadButton2
-                    )}
-                  </UploadCustom>
-                </div>
-              </div>
+              <UploadCCCD onChange={function (data: IUploadCCCDData): void {
+                setPayload({
+                  ...payload,
+                  ...data,
+                })
+              }} />
               <p>
                 * Để tránh bị ảnh hưởng khi qua đêm tại Home do cơ quan chức năng đến kiểm tra bất ngờ, nếu khai báo lưu trú thiếu thông tin của khách đi cùng nên khách book có khung giờ qua đêm, Home sẽ cần thêm thông tin CCCD của người đi cùng.
               </p>

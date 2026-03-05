@@ -101,7 +101,7 @@ export function UploadCCCD(props: IUploadCCCDProps) {
         }
 
         const sw = 320
-        const sh = 180
+        const sh = 202
 
         const sx = (video.videoWidth - sw) / 2
         const sy = (video.videoHeight - sh) / 2
@@ -153,10 +153,10 @@ export function UploadCCCD(props: IUploadCCCDProps) {
                 Object.entries(temp).map(([val, label]) => {
                     const value = val as keyof IUploadCCCDData;
                     return (
-                        <div className="max-w-1/2 w-1/2" key={value} onClick={() => {
+                        <div className="max-w-1/2 w-1/2 h-[180px] max-h-[180px]" key={value} onClick={() => {
                             showModal(value);
                         }}>
-                            <div className="cursor-pointer max-w-full flex flex-col justify-center items-center gap-1 border">
+                            <div className="cursor-pointer max-w-full h-[180px] max-h-[180x] flex flex-col justify-center items-center gap-1 border">
                                 {
                                     !payload[value] ? (
                                         <>
@@ -183,7 +183,7 @@ export function UploadCCCD(props: IUploadCCCDProps) {
                     {
                         activeCapture && (
                             <div className='flex justify-center items-center flex-col gap-2'>
-                                <video ref={videoRef} className="w-[320px] h-[180px]" playsInline />
+                                <video ref={videoRef} className="w-[320px] h-[202px]" playsInline />
                                 <div ref={frameRef} className="cccd-frame" />
                                 <canvas ref={canvasRef} className='hidden' />
                                 <div className='flex gap-2 items-stretch'>

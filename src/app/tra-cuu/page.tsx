@@ -202,23 +202,23 @@ export default function TraCuuPage() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto p-6">
+    <div className="max-w-4xl mx-auto p-1 md:p-6 tra-cuu">
       <Card className="shadow-lg">
-        <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-1 md:gap-6">
           {/* Header */}
-          <div className="border-b pb-4">
+          <div className="border-b pb-0 md:pb-4">
             <h1>Thông tin đặt phòng</h1>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1 md:gap-2">
               <span className="text-gray-600">Mã booking:</span>
               <span className="font-mono font-semibold">{data.id}</span>
             </div>
-            <div className="mt-2">
+            <div className="mt-1 md:mt-2">
               <span className={`font-semibold text-lg ${getStatusColor(data.status)}`}>
                 {getStatusText(data.status)}
               </span>
             </div>
             {data.status.toUpperCase() === 'CANCELLED' && (
-              <div className="mt-3 p-3 bg-red-50 border border-red-200 rounded">
+              <div className="mt-1 md:mt-3 p-1 md:p-3 bg-red-50 border border-red-200 rounded">
                 <p className="text-red-700 text-sm">
                   ⚠️ Booking này đã bị hủy. Vui lòng liên hệ với chúng tôi nếu bạn có thắc mắc.
                 </p>
@@ -228,17 +228,17 @@ export default function TraCuuPage() {
 
           {/* Room Information */}
           {data.room && (
-            <div className="border-b pb-4">
-              <h2 className="text-xl font-semibold mb-3">Thông tin phòng</h2>
-              <div className="grid md:grid-cols-2 gap-3">
+            <div className="border-b pb-1 md:pb-4">
+              <h2 className="text-xl font-semibold mb-1 md:mb-3">Thông tin phòng</h2>
+              <div className="grid md:grid-cols-2 gap-1 md:gap-3">
                 <div>
                   <span className="text-gray-600">Tên phòng:</span>
-                  <span className="ml-2 font-semibold">{data.room.name}</span>
+                  <span className="ml-1 md:ml-2 font-semibold">{data.room.name}</span>
                 </div>
                 {data.room.description && (
                   <div>
                     <span className="text-gray-600">Mô tả:</span>
-                    <span className="ml-2">{data.room.description}</span>
+                    <span className="ml-1 md:ml-2">{data.room.description}</span>
                   </div>
                 )}
               </div>
@@ -246,20 +246,20 @@ export default function TraCuuPage() {
           )}
 
           {/* Customer Information */}
-          <div className="border-b pb-4">
-            <h2 className="text-xl font-semibold mb-3">Thông tin khách hàng</h2>
-            <div className="grid md:grid-cols-2 gap-3">
+          <div className="border-b pb-1 md:pb-4">
+            <h2 className="text-xl font-semibold mb-1 md:mb-3">Thông tin khách hàng</h2>
+            <div className="grid md:grid-cols-2 gap-1 md:gap-3">
               <div>
                 <span className="text-gray-600">Họ và tên:</span>
-                <span className="ml-2 font-semibold">{data.fullName || data.customerName}</span>
+                <span className="ml-1 md:ml-2 font-semibold">{data.fullName || data.customerName}</span>
               </div>
               <div>
                 <span className="text-gray-600">Số điện thoại:</span>
-                <span className="ml-2 font-semibold">{data.phone || data.customerPhone}</span>
+                <span className="ml-1 md:ml-2 font-semibold">{data.phone || data.customerPhone}</span>
               </div>
               <div>
                 <span className="text-gray-600">Số lượng khách:</span>
-                <span className="ml-2">{data.personCount || data.numberOfGuests} người</span>
+                <span className="ml-1 md:ml-2">{data.personCount || data.numberOfGuests} người</span>
               </div>
               {data.note && (
                 <div className="md:col-span-2">
@@ -272,23 +272,23 @@ export default function TraCuuPage() {
 
           {/* Password Information */}
           {data.status === BOOKING_STATUS_ENUM.SUCCESS && (data.room?.password || data.room?.office?.wifiPassword || data.room?.office?.homePassword) && (
-            <div className="border-b pb-4">
-              <h2 className="text-xl font-semibold mb-3">Thông tin mật khẩu</h2>
-              <div className="grid md:grid-cols-2 gap-3">
+            <div className="border-b pb-1 md:pb-4">
+              <h2 className="text-xl font-semibold mb-1 md:mb-3">Thông tin mật khẩu</h2>
+              <div className="grid md:grid-cols-2 gap-1 md:gap-3">
                 {data.room?.password && (
-                  <div className="bg-blue-50 p-3 rounded">
+                  <div className="bg-blue-50 p-1 md:p-3 rounded">
                     <span className="text-gray-600">Mật khẩu phòng</span>
                     <div className="ml-2 font-mono font-semibold text-lg">{data.room.password}</div>
                   </div>
                 )}
                 {data.room?.office?.wifiPassword && (
-                  <div className="bg-green-50 p-3 rounded">
+                  <div className="bg-green-50 p-1 md:p-3 rounded">
                     <span className="text-gray-600">Wifi:</span>
                     <div className="ml-2 font-mono font-semibold text-lg">{data.room.office.wifiPassword}</div>
                   </div>
                 )}
                 {data.room?.office?.homePassword && (
-                  <div className="bg-purple-50 p-3 rounded">
+                  <div className="bg-purple-50 p-1 md:p-3 rounded">
                     <span className="text-gray-600">Mật khẩu nhà:</span>
                     <div className="ml-2 font-mono font-semibold text-lg">{data.room.office.homePassword}</div>
                   </div>
@@ -299,12 +299,12 @@ export default function TraCuuPage() {
 
           {/* Booking Details */}
           {data.details && data.details.length > 0 && (
-            <div className="border-b pb-4">
-              <h2 className="text-xl font-semibold mb-3">Chi tiết đặt phòng</h2>
+            <div className="border-b pb-1 md:pb-4">
+              <h2 className="text-xl font-semibold mb-1 md:mb-3">Chi tiết đặt phòng</h2>
               <div className="space-y-2">
                 {data.details.map((detail, index) => (
-                  <div key={detail.id || index} className="flex justify-between items-center bg-gray-50 p-3 rounded">
-                    <div className="flex gap-4">
+                  <div key={detail.id || index} className="flex justify-between items-center bg-gray-50 p-1 md:p-3 rounded">
+                    <div className="flex gap-1 md:gap-4">
                       <span className="font-medium">{detail.date}</span>
                       <span className="text-gray-600">{getTimeText(detail.time)}</span>
                     </div>
@@ -317,31 +317,31 @@ export default function TraCuuPage() {
 
           {/* Services */}
           {data.services && data.services.length > 0 && (
-            <div className="border-b pb-4">
-              <h2 className="text-xl font-semibold mb-3">Dịch vụ đã chọn</h2>
+            <div className="border-b pb-1 md:pb-4">
+              <h2 className="text-xl font-semibold mb-1 md:mb-3">Dịch vụ đã chọn</h2>
               <div className="space-y-2">
                 {data.services.map((service, index) => {
                   const servicePrice = typeof service.price === 'string' ? parseFloat(service.price) : service.price;
                   const totalServicePrice = servicePrice * service.quantity;
                   const serviceName = service.service?.name || `Dịch vụ #${service.serviceId.substring(0, 8)}`;
                   return (
-                    <div key={service.id || index} className="flex justify-between items-center bg-gray-50 p-3 rounded">
-                      <div className="flex gap-4">
+                    <div key={service.id || index} className="flex justify-between items-center bg-gray-50 p-1 md:p-3 rounded">
+                      <div className="flex gap-1 md:gap-4">
                         <span className="font-medium">{serviceName}</span>
                         <span className="text-gray-600">x {service.quantity}</span>
                       </div>
                       <span className="font-semibold text-pink-600">{totalServicePrice.toLocaleString('vi-VN')}đ</span>
                     </div>
                   );
-                })}
+                })}time
               </div>
             </div>
           )}
 
           {/* Payment Information */}
           <div>
-            <h2 className="text-xl font-semibold mb-3">Thông tin thanh toán</h2>
-            <div className="bg-pink-50 p-4 rounded-lg space-y-2">
+            <h2 className="text-xl font-semibold mb-1 md:mb-3">Thông tin thanh toán</h2>
+            <div className="bg-pink-50 p-1 md:p-4 rounded-lg space-y-1 md:space-y-2">
               {(data.details && data.details.length > 0) && (
                 <div className="flex justify-between items-center">
                   <span className="text-gray-700">Tiền phòng:</span>
@@ -372,7 +372,7 @@ export default function TraCuuPage() {
                 </div>
               )}
 
-              <div className="border-t-2 border-pink-200 pt-2 mt-2">
+              <div className="border-t-2 border-pink-200 pt-1 md:pt-2 mt-1 md:mt-2">
                 <div className="flex justify-between items-center">
                   <span className="text-lg font-semibold">Tổng tiền:</span>
                   <span className="text-2xl font-bold text-pink-600">
@@ -385,7 +385,7 @@ export default function TraCuuPage() {
             </div>
           </div>
 
-          {/* CCCD Images */}ing
+          {/* CCCD Images */}
           {/* {(data.cccdFrontImageId || data.cccdBackImageId) && (
             <div>
               <h2 className="text-xl font-semibold mb-3">Căn cước công dân</h2>
@@ -415,7 +415,7 @@ export default function TraCuuPage() {
           )} */}
 
           {/* Action Buttons */}
-          <div className="flex gap-4 justify-end pt-4">
+          <div className="flex gap-1 md:gap-4 justify-end pt-1 md:pt-4">
             {canPayBooking() && (
               <Button
                 type="primary"
@@ -459,14 +459,14 @@ export default function TraCuuPage() {
           </Button>
         ]}
       >
-        <div className="flex flex-col items-center gap-4">
+        <div className="flex flex-col items-center gap-1 md:gap-4">
           {paymentSuccess ? (
             <div className="text-center">
-              <div className="text-green-600 text-2xl mb-4">✓</div>
-              <h3 className="text-xl font-semibold mb-2">Thanh toán thành công!</h3>
+              <div className="text-green-600 text-2xl mb-1 md:mb-4">✓</div>
+              <h3 className="text-xl font-semibold mb-1 md:mb-2">Thanh toán thành công!</h3>
               <p>Mã booking của bạn: <strong>{data?.id}</strong></p>
-              <p className="mt-2">Thông tin chi tiết đã được cập nhật</p>
-              <div className="mt-4 p-3 bg-blue-50 rounded">
+              <p className="mt-1 md:mt-2">Thông tin chi tiết đã được cập nhật</p>
+              <div className="mt-1 md:mt-4 p-1 md:p-3 bg-blue-50 rounded">
                 <p className="text-sm text-blue-800">
                   Trang sẽ tự động cập nhật trạng thái mới
                 </p>
@@ -513,10 +513,10 @@ export default function TraCuuPage() {
                       <span>{Number(data.totalPrice).toLocaleString('vi-VN')}đ</span>
                     </div>
                   </div>
-                  <div className="mt-2 p-3 bg-orange-50 rounded">
+                  <div className="mt-1 md:mt-2 p-1 md:p-3 bg-orange-50 rounded">
                     <p className="text-sm text-orange-800">
                       ⏱️ Vui lòng hoàn tất thanh toán trong thời gian quy định
-                    </p>
+                    </p>  
                   </div>
                 </>
               )}

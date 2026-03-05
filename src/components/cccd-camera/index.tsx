@@ -5,6 +5,9 @@ import { Button, message, Modal } from "antd";
 import { useEffect, useRef, useState } from "react"
 import { getUrlFromFileId } from '@/utils/get-url-from-file-id';
 
+const FRAME_WIDTH = 320
+const FRAME_HEIGHT = 200
+
 export interface IUploadCCCDData {
     cccdFrontImageId: string;
     cccdBackImageId: string
@@ -100,25 +103,26 @@ export function UploadCCCD(props: IUploadCCCDProps) {
             return
         }
 
-        const sw = 320
-        const sh = 202
-
-        const sx = (video.videoWidth - sw) / 2
-        const sy = (video.videoHeight - sh) / 2
-
+        const vw = video.videoWidth
+        const vh = video.videoHeight
+        const ratio = 1.586 // CCCD
+        const sw = vw * 0.8
+        const sh = sw / ratio
+        const sx = (vw - sw) / 2
+        const sy = (vh - sh) / 2
         canvas.width = sw
         canvas.height = sh
 
         const ctx = canvas.getContext("2d")!
 
-        ctx.drawImage(video, sx, sy, sw, sh, 0, 0, sw, sh)
+        ctx.drawImage(video, sx, sy, sw, sh, 0, 0, canvas.width, canvas.height)
 
         setTimeout(() => {
             canvas.toBlob((blob) => {
                 if (!blob) return
                 const file = new File([blob], "cccd.jpg", { type: "image/jpeg" })
                 uploadFile(file)
-            }, "image/jpeg", 0.95)
+            }, "image/jpeg", 0.9)
         }, 0)
     }
 
@@ -164,7 +168,7 @@ export function UploadCCCD(props: IUploadCCCDProps) {
                                             {label}
                                         </>
                                     ) : (
-                                        <img src={getUrlFromFileId(payload[value])} alt="" className='max-w-full max-h-full object-cover' />
+                                        <img src={getUrlFromFileId(payload[value])} alt="" className='max-w-full max-h-full' />
                                     )
                                 }
                             </div>
@@ -183,8 +187,23 @@ export function UploadCCCD(props: IUploadCCCDProps) {
                     {
                         activeCapture && (
                             <div className='flex justify-center items-center flex-col gap-2'>
-                                <video ref={videoRef} className="w-[320px] h-[202px]" playsInline />
-                                <div ref={frameRef} className="cccd-frame" />
+                                <video ref={videoRef} autoPlay
+                                    playsInline
+                                    style={{
+                                        width: "100%",
+                                        borderRadius: 8,
+                                    }} />
+                                <div ref={frameRef} style={{
+                                    position: "absolute",
+                                    width: 320,
+                                    height: 200,
+                                    border: "3px solid red",
+                                    top: "50%",
+                                    left: "50%",
+                                    transform: "translate(-50%, -50%)",
+                                    boxSizing: "border-box",
+                                    pointerEvents: "none"
+                                }} />
                                 <canvas ref={canvasRef} className='hidden' />
                                 <div className='flex gap-2 items-stretch'>
                                     <Button onClick={() => capture()}>Chụp</Button>

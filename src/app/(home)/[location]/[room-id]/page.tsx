@@ -232,21 +232,23 @@ export default function RoomDetail() {
 
 
   useEffect(() => {
-    const handleFocus = () => {
-      if (bookingId) {
-        bookingApi.getById(bookingId).then(rs => {
-          if (rs.status === BOOKING_STATUS_ENUM.SUCCESS) {
-            router.push('/tra-cuu')
-          }
-        })
-      }
-    }
+    const id = setInterval(() => {
+      if (!bookingId) return;
+      bookingApi.getById(bookingId).then(rs => {
+        if (rs.status !== BOOKING_STATUS_ENUM.PENDING) {
+          router.push('/tra-cuu')
+        }
+      })
+    }, 5000)
+    // const handleFocus = () => {
+    //   if (bookingId) {
 
-    window.addEventListener("focus", handleFocus)
-    return () => window.removeEventListener("focus", handleFocus)
+    //   }
+    // }
 
-
-  }, [])
+    // window.addEventListener("focus", handleFocus)
+    return () => clearInterval(id)
+  }, [bookingId])
 
 
   return (

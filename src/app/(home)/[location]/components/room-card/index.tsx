@@ -16,11 +16,11 @@ export function RoomCardItem(props: ICardItemProps) {
         <Card
             hoverable
             variant="borderless"
-            className="overflow-hidden"
+            className="overflow-hidden max-w-[280px] md:max-w-[320px] lg:max-w-none"
             cover={
                 <Image
                     draggable={false}
-                    className="rounded-xs w-full h-48 object-cover"
+                    className="rounded-xs max-w-full h-48 object-cover"
                     src={getUrlFromFileId(item.images[0]?.imageId)}
                 />
             }

@@ -182,8 +182,9 @@ export function UploadCCCD(props: IUploadCCCDProps) {
                 open={activeKey.length > 0}
                 footer={null}
                 onCancel={handleCancel}
+                closeIcon={null}
             >
-                <div className="flex flex-col gap-2">
+                <div className="m-auto flex flex-col gap-2 max-w-[304px]">
                     {
                         activeCapture && (
                             <div className='flex justify-center items-center flex-col gap-2'>
@@ -195,8 +196,8 @@ export function UploadCCCD(props: IUploadCCCDProps) {
                                     }} />
                                 <div ref={frameRef} style={{
                                     position: "absolute",
-                                    width: 320,
-                                    height: 200,
+                                    width: 250,
+                                    height: 158,
                                     border: "3px solid red",
                                     top: "50%",
                                     left: "50%",

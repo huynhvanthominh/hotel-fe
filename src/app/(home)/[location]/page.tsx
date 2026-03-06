@@ -31,7 +31,7 @@ export default function LocationPage() {
           {
             rooms.map((item) => {
               return (
-                <div key={item.id} className="!flex justify-around gap-8">
+                <div key={item.id} className="!flex justify-around gap-8 max-w-full">
                   <div>
                     <RoomCardItem item={item} />
                   </div>

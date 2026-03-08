@@ -16,7 +16,7 @@ export function RoomCardItem(props: ICardItemProps) {
         <Card
             hoverable
             variant="borderless"
-            className="overflow-hidden max-w-[280px] md:max-w-[320px] lg:max-w-none"
+            className="overflow-hidden w-full max-w-full"
             cover={
                 <Image
                     draggable={false}

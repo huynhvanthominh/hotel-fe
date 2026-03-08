@@ -253,8 +253,8 @@ export default function RoomDetail() {
 
   return (
     <Form>
-      <div className="flex md:flex-row flex-col gap-4">
-        <div className="md:w-8/12 w-full flex flex-col gap-4">
+      <div className="flex lg:flex-row flex-col gap-4">
+        <div className="lg:w-8/12 w-full flex flex-col gap-4">
           <div> <h1>{room?.name}</h1></div>
           <div>
             <Carousel autoplay arrows >
@@ -274,7 +274,7 @@ export default function RoomDetail() {
             <div className="text-2xl">
               Tiện  nghi phòng
             </div>
-            <div className="grid md:grid-cols-4 grid-cols-2 gap-4">
+            <div className="grid lg:grid-cols-4 grid-cols-2 gap-4">
               {room?.amenities.map((item) => {
                 return (
                   <AmenityItem key={item.id} url={getUrlFromFileId(item.amenity.imageId)} name={item.amenity.name} />

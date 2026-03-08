@@ -87,8 +87,8 @@ export default function UserLayout({
         height: '100vh'
       }}>
         <Layout className="overflow-hidden w-full max-w-full gap-4">
-          <div className="flex md:justify-center md:items-center md:px-0 px-4 overflow-hidden" style={headerStyle}>
-            <div className="flex md:w-7/12 w-full" style={{
+          <div className="flex lg:justify-center lg:items-center lg:px-0 px-4 overflow-hidden" style={headerStyle}>
+            <div className="flex lg:w-7/12 w-full" style={{
             }}>
               <div className="flex">
                 <div className="p-2 cursor-pointer" onClick={() => {
@@ -98,7 +98,7 @@ export default function UserLayout({
                 </div>
               </div>
             </div>
-            <div className="md:hidden flex items-center">
+            <div className="lg:hidden flex items-center">
               <Button icon={<MenuOutlined />} onClick={showDrawer} />
               <Drawer
                 style={{
@@ -113,18 +113,18 @@ export default function UserLayout({
                 <NavMenuMobile />
               </Drawer>
             </div>
-            <div className="md:flex hidden text-2xl items-center gap-4">
+            <div className="lg:flex hidden text-2xl items-center gap-4">
               <NavMenu />
             </div>
           </div>
-          <Content className="md:w-8/12 w-full mx-auto md:px-0 px-4">
+          <Content className="lg:w-8/12 w-full mx-auto lg:px-0 px-4">
             <Container>{children}</Container>
           </Content>
           <div className="flex justify-center" style={footerStyle}>
-            <div className="flex flex-col md:w-7/12 w-full " style={{
+            <div className="flex flex-col lg:w-7/12 w-full " style={{
             }}>
               <div>
-                <div className="flex md:flex-row flex-col justify-around">
+                <div className="flex lg:flex-row flex-col justify-around">
                   <div className="flex flex-col">
                     <div className="p-2 flex justify-center">
                       <Image src="/taga-home-icon.png" alt="" width={256} height={256} />
@@ -142,7 +142,7 @@ export default function UserLayout({
                     </div>
                   </div>
                   <div className="flex justify-center">
-                    <div className="p-2 md:block flex flex-col justify-center">
+                    <div className="p-2 lg:block flex flex-col justify-center">
                       Chính sách
                       <ul className="flex flex-col justify-start">
                         {/* <li>
@@ -170,7 +170,7 @@ export default function UserLayout({
 
               </div>
               <div>
-                <div className="md:px-0 px-4">
+                <div className="lg:px-0 px-4">
                   Hộ kinh doanh TagaHome 85 Mậu Thân, Ninh Kiều, Thành Phố Cần Thơ
                 </div>
               </div>

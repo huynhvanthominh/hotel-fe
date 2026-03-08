@@ -16,8 +16,8 @@ interface IAmenityItemProps {
 export const AmenityItem = (props: IAmenityItemProps) => {
     const { url, name } = props;
     return (
-        <div className="flex items-center gap-2">
-            <Avatar size={36} className="border-[#E0b0FF] p-1" src={<img draggable={false} src={url} alt={name} />} />
+        <div className="flex flex-1 items-center gap-2">
+            <Avatar className="border-[#E0b0FF] p-1" src={<img draggable={false} src={url} alt={name} />} />
             {name && <span>{name}</span>}
         </div>
     )

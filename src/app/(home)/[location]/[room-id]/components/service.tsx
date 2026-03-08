@@ -127,7 +127,7 @@ export const ServiceComponent = ({ onServiceChange }: DichVuProps) => {
     <div className="flex flex-col gap-4">
       <h2>Dịch vụ</h2>
 
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid lg:grid-cols-2 lg:grid-cols-3 gap-4 max-h-[500px] overflow-auto">
         {services.map((service) => {
           const isSelected = selectedServices.has(service.id);
           const selection = selectedServices.get(service.id);
@@ -135,7 +135,7 @@ export const ServiceComponent = ({ onServiceChange }: DichVuProps) => {
           const price = calculateServicePrice(service.price);
 
           return (
-            <div className='flex h-[124px] bg-white' key={service.id}>
+            <div className='flex bg-white' key={service.id}>
               <div className='w-1/2 p-2 max-w-1/2 max-h-full  flex items-center justify-center rounded-lg overflow-hidden'>
                 {
                   service.imageId ? (

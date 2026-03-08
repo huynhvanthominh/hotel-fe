@@ -27,15 +27,12 @@ export default function LocationPage() {
   return (
     <section>
       <div className="">
-        <div className="grid md:grid-cols-1 lg:grid-cols-3 md:gap-8 gap-2  md:p-4 p-0">
+        <div className="grid grid-cols-1 lg:grid-cols-3 lg:gap-8 gap-2 lg:p-4 p-0 m-auto">
           {
             rooms.map((item) => {
               return (
-                <div key={item.id} className="!flex justify-around gap-8 max-w-full">
-                  <div>
-                    <RoomCardItem item={item} />
-                  </div>
-
+                <div key={item.id} className="!flex w-full justify-around gap-8 max-w-[calc(100vw-16px)] lg-max-w-[calc(100vw-30%)]">
+                  <RoomCardItem item={item} />
                 </div>
               )
             })

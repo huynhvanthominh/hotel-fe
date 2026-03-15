@@ -11,6 +11,7 @@ import { ExclamationCircleOutlined } from '@ant-design/icons'
 import { useWebSocketContext } from "@/contexts/websocket-context"
 import { WS_EVENTS, type PaymentConfirmedData } from "@/types/websocket.types"
 import { RoomCardItem } from "./components/room-card"
+import { TimeBoxComponent } from "./[room-id]/components/time-box"
 
 
 
@@ -36,6 +37,15 @@ export default function LocationPage() {
                 </div>
               )
             })
+          }
+        </div>
+        <div className="flex flex-col gap-2">
+          {
+            rooms.map(room => (
+              <div key={room.id}>
+                <TimeBoxComponent room={room} showPriceTamp />
+              </div>
+            ))
           }
         </div>
       </div >

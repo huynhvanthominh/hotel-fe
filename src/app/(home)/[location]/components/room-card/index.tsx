@@ -58,7 +58,5 @@ export function RoomCardItem(props: ICardItemProps) {
 
             </div>
         </Card>
-
-
     )
 }

@@ -225,7 +225,7 @@ export function UploadCCCD(props: IUploadCCCDProps) {
                                 <input
                                     ref={inputFileRef}
                                     type={'file'}
-                                    accept="image/*"
+                                    accept="image/png,image/jpeg,image/jpg,image/webp"
                                     className="hidden"
                                     onChange={handleChange}
                                 />

@@ -8,6 +8,8 @@ import { bookingApi } from '@/api/booking';
 import { type IBooking } from '@/models/booking';
 import { BOOKING_STATUS_ENUM } from '@/enums/booking-status.enum';
 import { useColumn } from './hooks/use-column';
+import { calulationPrice } from '../../utils/calulation';
+import { usePathname, useRouter } from 'next/navigation';
 dayjs.locale('vi');
 
 type FormInstance<T> = GetRef<typeof Form<T>>;
@@ -141,18 +143,22 @@ const EditableCell: React.FC<React.PropsWithChildren<EditableCellProps>> = ({
 };
 
 interface IKhungGioProps {
-  room?: IRoom | null;
-  roomId?: string;
+  room: IRoom;
   onChange?: (data: Record<string, Record<string, number>>) => void;
+  showPriceTamp?: boolean;
+  defaultValue?: Record<string, Record<string, number>>
 }
 
-export const TimeBoxComponent = ({ room, roomId, onChange }: IKhungGioProps) => {
-  const { prices = [] } = room || {};
+export const TimeBoxComponent = ({ room, onChange, showPriceTamp, defaultValue = {} }: IKhungGioProps) => {
+  const { prices = [], id: roomId } = room || {};
+  const router = useRouter();
+  const path = usePathname();
   const [dataSource, setDataSource] = useState<ITimeBoxItem[]>([]);
   // date => time => price
-  const [data, setData] = useState<Record<string, Record<string, number>>>({});
+  const [data, setData] = useState<Record<string, Record<string, number>>>(defaultValue);
   const [bookedSlots, setBookedSlots] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(false);
+  const [price, setPrice] = useState(0);
 
   // Fetch existing bookings for this room
   useEffect(() => {
@@ -222,10 +228,18 @@ export const TimeBoxComponent = ({ room, roomId, onChange }: IKhungGioProps) => 
     },
   };
 
+  const handleBook = (roomId: string) => {
+    router.push(`${path}/${roomId}?data=${JSON.stringify(data)}`, {
+    })
+  }
+
   useEffect(() => {
     if (onChange) {
       onChange(data);
     }
+    const { totalPrice, discountPercent } = calulationPrice({ data, roomId })
+    const price = totalPrice - totalPrice * discountPercent / 100;
+    setPrice(price)
   }, [data]);
 
   useEffect(() => {
@@ -233,18 +247,42 @@ export const TimeBoxComponent = ({ room, roomId, onChange }: IKhungGioProps) => 
   }, [prices])
 
   return (
-    <Table<ITimeBoxItem>
-      pagination={false}
-      className='text-xs'
-      columns={columns as any}
-      loading={loading}
-      dataSource={dataSource}
-      bordered
-      size="small"
-      scroll={{ y: 47 * 5 }}
-      components={components}
-      rowClassName={() => 'editable-row'}
-    />
+    <div>
+      <Table<ITimeBoxItem>
+        pagination={false}
+        className='text-xs'
+        columns={columns as any}
+        loading={loading}
+        dataSource={dataSource}
+        bordered
+        size="small"
+        scroll={{ y: 47 * 5 }}
+        components={components}
+        rowClassName={() => 'editable-row'}
+      />
+      {
+        showPriceTamp && (
+
+          <div className='flex float-end'>
+            <div className='border p-4'>
+              <div className=''>
+                <div className="flex justify-between items-center">
+                  <span className="text-lg font-bold text-gray-800">Tạm tính:</span>
+                  <span className="text-2xl font-bold text-pink-600">
+                    {(price).toLocaleString('vi-VN')}đ
+                  </span>
+                </div>
+              </div>
+
+              <Button className="w-full" variant="solid" color="pink" onClick={() => handleBook(roomId)}>Đặt phòng</Button>
+
+            </div>
+          </div>
+
+        )
+      }
+    </div>
+
 
   )
 }

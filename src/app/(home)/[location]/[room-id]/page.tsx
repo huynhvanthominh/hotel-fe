@@ -3,7 +3,7 @@ import { Button, Carousel, Checkbox, Form, type GetProp, type GetRef, Image, Inp
 import { ServiceComponent } from "./components/service";
 import { useState, useEffect } from "react";
 import { PlusOutlined } from '@ant-design/icons';
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { roomApi } from "@/api/room";
 import { getUrlFromFileId } from "@/utils/get-url-from-file-id";
@@ -18,6 +18,7 @@ import { TimeBoxComponent } from "./components/time-box";
 import { PriceComponent } from "./components/price";
 import { BOOKING_STATUS_ENUM } from "@/enums/booking-status.enum";
 import { IUploadCCCDData, UploadCCCD } from "@/components/cccd-camera";
+import { calulationPrice } from "./utils/calulation";
 
 const { TextArea } = Input;
 
@@ -34,6 +35,8 @@ export default function RoomDetail() {
   const [serviceTotalPrice, setServiceTotalPrice] = useState(0);
   const [check1, setCheck1] = useState(false);
   const [check2, setCheck2] = useState(false);
+  const searchParams = useSearchParams();
+  const data = JSON.parse(searchParams.get('data') ?? '{}')
 
   const [payload, setPayload] = useState<ICreateBookingRequest>({
     personCount: 2
@@ -286,41 +289,13 @@ export default function RoomDetail() {
             <PriceComponent prices={room?.prices ?? []} />
           </div>
           <div>
-            <TimeBoxComponent room={room} roomId={roomId} onChange={data => {
+            <TimeBoxComponent defaultValue={data} room={room!} onChange={data => {
 
-              const times: {
-                date: string;
-                time: string;
-                price: number;
-                roomId: string;
-              }[] = [];
-              Object.entries(data).forEach(([date, timeKey]) => {
-                Object.entries(timeKey).forEach(([time, value]) => {
-                  if (!value) {
-                    return;
-                  }
-                  times.push({
-                    date,
-                    time,
-                    price: value,
-                    roomId
-                  })
-                })
-              })
-              const totalSelect = times.length;
-              //  show total and discount
-
-              const totalPrice = times.reduce((sum, t) => sum + t.price, 0);
-              let discountPercent = 0;
-              if (totalSelect >= 2) {
-                discountPercent = 10; // 10% discount
-              } else {
-                discountPercent = 0;
-              }
+              const { totalPrice, times, discountPercent } = calulationPrice({ data, roomId })
 
               setPayload({
                 ...payload,
-                totalPrice: totalPrice,
+                totalPrice,
                 discountPercent,
                 times
               })

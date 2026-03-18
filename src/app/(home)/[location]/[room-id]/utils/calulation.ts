@@ -1,6 +1,7 @@
 export interface ICalculationParams {
     data: Record<string, Record<string, number>>,
-    roomId: string
+    roomId: string,
+    servicePrice?: number
 }
 
 export interface ITime {
@@ -10,10 +11,15 @@ export interface ITime {
     roomId: string;
 }
 
+export const priceDiscount = (total: number, discount: number): number => {
+
+    return total - total * discount / 100
+}
+
 export const calulationPrice = (params: ICalculationParams): {
     totalPrice: number,
     discountPercent: number,
-    times: ITime[]
+    times: ITime[],
 } => {
     const { data, roomId } = params;
     const rs = 0;
@@ -44,6 +50,6 @@ export const calulationPrice = (params: ICalculationParams): {
     return {
         totalPrice,
         discountPercent,
-        times
+        times,
     }
 }

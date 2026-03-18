@@ -18,7 +18,7 @@ import { TimeBoxComponent } from "./components/time-box";
 import { PriceComponent } from "./components/price";
 import { BOOKING_STATUS_ENUM } from "@/enums/booking-status.enum";
 import { IUploadCCCDData, UploadCCCD } from "@/components/cccd-camera";
-import { calulationPrice } from "./utils/calulation";
+import { calulationPrice, priceDiscount } from "./utils/calulation";
 
 const { TextArea } = Input;
 
@@ -445,7 +445,7 @@ export default function RoomDetail() {
                   <div className="flex justify-between items-center">
                     <span className="text-lg font-bold text-gray-800">Tổng cộng:</span>
                     <span className="text-2xl font-bold text-pink-600">
-                      {(((payload.totalPrice + serviceTotalPrice + extraGuestCharge)) - ((payload.totalPrice + serviceTotalPrice + extraGuestCharge) * (payload.discountPercent ?? 0) / 100)).toLocaleString('vi-VN')}đ
+                      {(priceDiscount(payload.totalPrice + serviceTotalPrice + extraGuestCharge, payload.discountPercent ?? 0)).toLocaleString('vi-VN')}đ
                     </span>
                   </div>
                 </div>
@@ -499,7 +499,7 @@ export default function RoomDetail() {
                 {isConnected ? "● Đang chờ xác nhận thanh toán..." : "○ Đang kết nối..."}
               </div>
               <img
-                src={`https://payment.pay2s.vn/quicklink/${process.env.NEXT_PUBLIC_BANK_BRANCH}/${process.env.NEXT_PUBLIC_BANK_ACCOUNT}/${process.env.NEXT_PUBLIC_BANK_NAME}?amount=${payload.totalPrice + serviceTotalPrice + extraGuestCharge}&is_mask=0&bg=0&memo=TAGAHOME${hashToBase64(bookingId || '')}`}
+                src={`https://payment.pay2s.vn/quicklink/${process.env.NEXT_PUBLIC_BANK_BRANCH}/${process.env.NEXT_PUBLIC_BANK_ACCOUNT}/${process.env.NEXT_PUBLIC_BANK_NAME}?amount=${priceDiscount(payload.totalPrice + serviceTotalPrice + extraGuestCharge, payload.discountPercent ?? 0)}&is_mask=0&bg=0&memo=TAGAHOME${hashToBase64(bookingId || '')}`}
                 alt="QR Code thanh toán"
                 width={400}
                 height={400}
@@ -514,7 +514,7 @@ export default function RoomDetail() {
                   <p>Phụ thu khách: {extraGuestCharge.toLocaleString('vi-VN')}đ</p>
                 )}
 
-                <p className="font-semibold mt-1">Tổng cộng: {((payload.totalPrice + serviceTotalPrice + extraGuestCharge) - ((payload.totalPrice + serviceTotalPrice + extraGuestCharge) * (payload.discountPercent ?? 0) / 100)).toLocaleString('vi-VN')}đ</p>
+                <p className="font-semibold mt-1">Tổng cộng: {(priceDiscount(payload.totalPrice + serviceTotalPrice + extraGuestCharge, payload.discountPercent ?? 0)).toLocaleString('vi-VN')}đ</p>
               </div>
             </>
           )}

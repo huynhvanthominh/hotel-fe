@@ -514,7 +514,7 @@ export default function RoomDetail() {
                   <p>Phụ thu khách: {extraGuestCharge.toLocaleString('vi-VN')}đ</p>
                 )}
 
-                <p className="font-semibold mt-1">Tổng cộng: {((payload.totalPrice + serviceTotalPrice + extraGuestCharge) - ((payload.totalPrice + serviceTotalPrice + extraGuestCharge) * (payload.discountPercent ?? 0) / 100)).toLocaleString('vi-VN')}đ</p>
+                <p className="font-semibold mt-1">Tổng cộng: {(priceDiscount(payload.totalPrice + serviceTotalPrice + extraGuestCharge, payload.discountPercent ?? 0)).toLocaleString('vi-VN')}đ</p>
               </div>
             </>
           )}

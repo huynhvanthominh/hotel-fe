@@ -143,25 +143,16 @@ export default function UserLayout({
                   </div>
                   <div className="flex justify-center">
                     <div className="p-2 lg:block flex flex-col justify-center">
-                      Chính sách
                       <ul className="flex flex-col justify-start">
-                        {/* <li>
-                          Chính sách bảo mật thông tin
-                        </li> */}
                         <li>
-                          Nội quy và quy định
+                          <a href="/NỘI QUY VÀ QUY ĐỊNH.docx">Nội quy và quy định</a>
                         </li>
                         <li>
-                          Hình thức thanh toán
+                          <a href="">Hình thức thanh toán</a>
                         </li>
-
-                        {/* <li>
-                          Hướng dẫn sử dụng
-                        </li> */}
-                        <li>
-                          Hướng dẫn tự check-in
+                         <li>
+                          <a href="https://vt.tiktok.com/ZSuenVvkg/" >Đường đến homstay</a>
                         </li>
-
                       </ul>
                     </div>
                   </div>

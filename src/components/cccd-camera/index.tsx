@@ -221,7 +221,7 @@ export function UploadCCCD(props: IUploadCCCDProps) {
                                 }}>Chụp ảnh mới</Button>
                                 <Button onClick={() => {
                                     inputFileRef.current?.click();
-                                }} >Chọn ảnh có sẵng</Button>
+                                }} >Chọn ảnh có sẵn</Button>
                                 <input
                                     ref={inputFileRef}
                                     type={'file'}

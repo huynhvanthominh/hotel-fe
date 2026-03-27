@@ -382,8 +382,8 @@ export default function RoomDetail() {
                 </Checkbox>
                 <Checkbox onChange={e => {
                   setCheck2(e.target.checked);
-                }}>
-                  Sau khi quét mã thanh toán thành công bạn hãy quay lại đây để chụp thông tin Booking (Tick để tiếp tục Đặt phòng)
+                }} className="text-[#C264FF]">
+                  Sau khi quét mã thanh toán thành công bạn hãy chụp thông tin Booking  (Tick để tiếp tục Đặt phòng)
                 </Checkbox>
               </div>
               <div>

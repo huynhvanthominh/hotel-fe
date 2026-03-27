@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import { Button, Form, Table, Tooltip } from 'antd';
+import { Button, Checkbox, Form, Table, Tooltip } from 'antd';
 import type { GetRef, InputRef, TableColumnsType } from 'antd';
 import dayjs from 'dayjs';
 import 'dayjs/locale/vi';
@@ -17,10 +17,11 @@ type FormInstance<T> = GetRef<typeof Form<T>>;
 const EditableContext = React.createContext<FormInstance<any> | null>(null);
 
 export interface ITimeBoxItem {
-  [key: string]: number | string;
+  [key: string]: number | string | boolean;
   name: string;
   thu: string;
   ngay: string;
+  isToday: boolean
 }
 
 
@@ -46,11 +47,16 @@ function formatDayLabel(date: string | Date) {
 const dataSourceDefault = (params: { prices: IRoomPrice[] }) => {
   const { prices } = params;
   const data = [];
+
+  const today = dayjs();
+
+
   for (let date = start; date.isBefore(end); date = date.add(1, 'day')) {
     const item: any = {
       thu: formatDayLabel(date.toDate()),
       ngay: date.format('DD-MM-YYYY'),
       key: date.format('DDMMYYYY'),
+      isToday: date.isSame(today, 'day')
     }
     const timeItems = prices.map(item => {
       return {
@@ -246,11 +252,26 @@ export const TimeBoxComponent = ({ room, onChange, showPriceTamp, defaultValue =
     setDataSource(dataSourceDefault({ prices }));
   }, [prices])
 
+
   return (
     <div>
+      <div className='flex justify-center gap-2 border-t-2 py-4 border-t-[#dee2e6]'>
+        <div className='flex items-center gap-2'>
+          <div className={`w-[16px] h-[16px] !border !border-[#C264FF]  rounded-sm bg-[#C264FF]`}></div>
+          <div >Đã đặt</div>
+        </div>
+        <div className='flex items-center gap-2'>
+          <div className={`w-[16px] h-[16px] !border !border-[#C264FF]  rounded-sm`}></div>
+          <div >Còn trống</div>
+        </div>
+        <div className='flex items-center gap-2'>
+          <div className={`w-[16px] h-[16px] !border !border-[#E0B0FF]  rounded-sm bg-[#E0B0FF]`}></div>
+          <div >Đang chọn</div>
+        </div>
+      </div>
       <Table<ITimeBoxItem>
         pagination={false}
-        className='text-xs'
+        className='text-xs time-box'
         columns={columns as any}
         loading={loading}
         dataSource={dataSource}

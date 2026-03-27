@@ -6,6 +6,7 @@ import {
     SunOutlined
 } from '@ant-design/icons';
 import { ITimeBoxItem } from "..";
+import { isToday } from "date-fns";
 
 interface IUseColumnProps {
     room: IRoom | null | undefined;
@@ -32,26 +33,38 @@ export const useColumn = (props: IUseColumnProps) => {
         {
             title: 'Tên phòng',
             fixed: 'start',
+            className: '!bg-[#f7f7f7]',
             children: [
                 {
+                    className: '!bg-[#f7f7f7]',
                     title: 'Thứ',
                     dataIndex: 'thu',
                     key: 'thu',
-                    width: 50
+                    width: 50,
+                    render: (value: string, record: ITimeBoxItem) => {
+                        const { isToday } = record;
+                        return <div className={`${isToday ? 'text-[#c246ff]' : ''}`}>{value}</div>
+                    }
                 },
                 {
+                    className: '!bg-[#f7f7f7]',
                     title: 'Ngày',
                     dataIndex: 'ngay',
                     key: 'ngay',
-                    width: 95
+                    width: 95,
+                    render: (value: string, record: ITimeBoxItem) => {
+                        const { isToday } = record;
+                        return <div className={`${isToday ? 'text-[#c246ff]' : ''}`}>{value}</div>
+                    }
                 },
             ],
         },
         {
             title: room?.name || '',
             width: 600,
-            children: prices.map(item => {
+            children: prices.map((item ,index) => {
                 return {
+                    className: `!bg-[#${index % 2=== 0 ? 'ffde592e' : 'fff'}]`,
                     title: (
                         <div className="flex flex-col text-sm justify-center items-center">
                             <div>

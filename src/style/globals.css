@@ -83,6 +83,10 @@ button {
   color: #fff !important;
 }
 
+button.slick-arrow {
+  background-color: unset !important;
+}
+
 h1,
 h2,
 h3,
@@ -132,4 +136,20 @@ p,
 h2,
 span {
   font-size: 0.75rem !important;
+}
+
+.time-box {
+  /* border-width: 4px; */
+  border-collapse: collapse;
+  /* caption-side: bottom;
+  border-style: double;
+  border-color: #dee2e6; */
+
+}
+
+.time-box th,
+td {
+  border-width: 4px;
+  border-style: double;
+  border-color: #dee2e6;
 }

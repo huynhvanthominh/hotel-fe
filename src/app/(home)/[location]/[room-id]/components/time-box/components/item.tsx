@@ -20,7 +20,7 @@ export const ItemRender = (props: {
         <Button
             onClick={() => {
                 if (isBooked || isBlock) return;
-                let parent = { ...data };
+                const parent = { ...data };
                 const newData = parent[roomId] ?? {};
                 newData[dataKey1] = { ...newData[dataKey1], [dataKey2]: isSelect ? 0 : price };
                 parent[roomId] = newData;

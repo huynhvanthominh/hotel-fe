@@ -99,7 +99,7 @@ export function UploadCCCD(props: IUploadCCCDProps) {
         const canvas = canvasRef.current!
 
         if (!video.videoWidth) {
-            console.log("video not ready")
+            console.info("video not ready")
             return
         }
 

@@ -14,11 +14,11 @@ import { useWebSocketContext } from "@/contexts/websocket-context";
 import { WS_EVENTS, type TransactionSuccessData, type PaymentConfirmedData } from "@/types/websocket.types";
 import { ICreateBookingRequest, IBookingService } from "@/models/booking";
 import { AmenityItem } from "@/components/amenity";
-import { TimeBoxComponent } from "./components/time-box";
 import { PriceComponent } from "./components/price";
 import { BOOKING_STATUS_ENUM } from "@/enums/booking-status.enum";
 import { IUploadCCCDData, UploadCCCD } from "@/components/cccd-camera";
 import { calulationPrice, priceDiscount } from "./utils/calulation";
+import { DataItem, TimeBoxComponent } from "./components/time-box";
 
 const { TextArea } = Input;
 
@@ -36,7 +36,7 @@ export default function RoomDetail() {
   const [check1, setCheck1] = useState(false);
   const [check2, setCheck2] = useState(false);
   const searchParams = useSearchParams();
-  const data = JSON.parse(searchParams.get('data') ?? '{}')
+  const data: DataItem = JSON.parse(searchParams.get('data') ?? '{}')
 
   const [payload, setPayload] = useState<ICreateBookingRequest>({
     personCount: 2
@@ -56,24 +56,6 @@ export default function RoomDetail() {
   const [room, setRoom] = useState<IRoom>();
   const params = useParams();
   const roomId = params['room-id'] as string;
-
-  const [imageUrl1, setImageUrl1] = useState<string>();
-  const [imageUrl2, setImageUrl2] = useState<string>();
-
-
-  const uploadButton1 = (
-    <button className="!bg-[unset] p-4 border border-black" type="button">
-      {<PlusOutlined className="text-black" />}
-      <div className="text-black">Căn cước công dân mặt trước</div>
-    </button>
-  );
-
-  const uploadButton2 = (
-    <button className="!bg-[unset] p-4 border border-black" type="button">
-      {<PlusOutlined className="text-black" />}
-      <div className="text-black">Căn cước công dân mặt sau</div>
-    </button>
-  );
 
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -96,7 +78,7 @@ export default function RoomDetail() {
     }
   };
 
-  const handleDatphong = () => {
+  const handleBooking = () => {
     if (!payload.fullName) {
       message.error('Vui lòng nhập họ và tên');
       return;
@@ -132,11 +114,14 @@ export default function RoomDetail() {
       return;
     }
 
-    const finalPayload = {
+    const total = payload.totalPrice + serviceTotalPrice + extraGuestCharge
+
+    const finalPayload: ICreateBookingRequest = {
       ...payload,
       roomId: roomId as string,
-      totalPrice: payload.totalPrice + serviceTotalPrice + extraGuestCharge,
+      totalPrice: total,
       services: selectedServices.length > 0 ? selectedServices : undefined,
+      totalPriceDiscount: total - total * (payload.discountPercent ?? 0) / 100
     };
 
     bookingApi.create(finalPayload).then((res) => {
@@ -289,7 +274,7 @@ export default function RoomDetail() {
             <PriceComponent prices={room?.prices ?? []} />
           </div>
           <div>
-            <TimeBoxComponent defaultValue={data} room={room!} onChange={data => {
+            <TimeBoxComponent defaultValue={data} rooms={room ? [room] : []} onChange={data => {
 
               const { totalPrice, times, discountPercent } = calulationPrice({ data, roomId })
 
@@ -457,7 +442,7 @@ export default function RoomDetail() {
           )}
 
           <div>
-            <Button className="w-full" variant="solid" color="pink" onClick={handleDatphong}>Đặt phòng</Button>
+            <Button className="w-full" variant="solid" color="pink" onClick={handleBooking}>Đặt phòng</Button>
           </div>
         </div>
       </div>

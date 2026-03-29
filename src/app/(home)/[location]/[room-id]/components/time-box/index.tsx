@@ -21,7 +21,8 @@ export interface ITimeBoxItem {
   name: string;
   thu: string;
   ngay: string;
-  isToday: boolean
+  isToday: boolean;
+  roomId: string;
 }
 
 
@@ -44,8 +45,8 @@ function formatDayLabel(date: string | Date) {
 
   return `T${day + 1}`;
 }
-const dataSourceDefault = (params: { prices: IRoomPrice[] }) => {
-  const { prices } = params;
+const dataSourceDefault = (params: { rooms: IRoom[] }) => {
+  const { rooms } = params;
   const data = [];
 
   const today = dayjs();
@@ -58,15 +59,22 @@ const dataSourceDefault = (params: { prices: IRoomPrice[] }) => {
       key: date.format('DDMMYYYY'),
       isToday: date.isSame(today, 'day')
     }
-    const timeItems = prices.map(item => {
-      return {
-        key: `${item.from}-${item.to}`,
-        value: item.price
-      }
+    const timeItems: { key: string, value: number, roomId: string }[] = [];
+    rooms.forEach(room => {
+      const { prices = [] } = room;
+      prices.forEach(item => {
+        timeItems.push({
+          key: `${item.from}-${item.to}`,
+          value: +item.price,
+          roomId: item.roomId,
+        })
+      })
     })
+
     timeItems
       .forEach(timeItem => {
         (item as any)[timeItem.key] = timeItem.value;
+        item.roomId = timeItem.roomId;
       });
     data.push(item);
   }
@@ -123,8 +131,6 @@ const EditableCell: React.FC<React.PropsWithChildren<EditableCellProps>> = ({
 
   const [isSelect, setIsSelect] = useState(false);
 
-
-
   const save = async () => {
     try {
       const values = await form.validateFields();
@@ -148,29 +154,38 @@ const EditableCell: React.FC<React.PropsWithChildren<EditableCellProps>> = ({
   return <td {...restProps}>{children}</td>;
 };
 
+type TimeItem = Record<string, number>
+
+type DateItem = Record<string, TimeItem>
+
+export type DataItem = Record<string, DateItem>
+
 interface IKhungGioProps {
-  room: IRoom;
-  onChange?: (data: Record<string, Record<string, number>>) => void;
+  rooms: IRoom[];
+  onChange?: (data: DataItem) => void;
   showPriceTamp?: boolean;
-  defaultValue?: Record<string, Record<string, number>>
+  defaultValue?: DataItem;
+
 }
 
-export const TimeBoxComponent = ({ room, onChange, showPriceTamp, defaultValue = {} }: IKhungGioProps) => {
-  const { prices = [], id: roomId } = room || {};
+
+export const TimeBoxComponent = ({ rooms = [], onChange, showPriceTamp, defaultValue = {} }: IKhungGioProps) => {
   const router = useRouter();
   const path = usePathname();
   const [dataSource, setDataSource] = useState<ITimeBoxItem[]>([]);
-  // date => time => price
-  const [data, setData] = useState<Record<string, Record<string, number>>>(defaultValue);
+  //room id => date => time => price
+  const [data, setData] = useState<DataItem>(defaultValue);
   const [bookedSlots, setBookedSlots] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(false);
   const [price, setPrice] = useState(0);
-
+  const [roomSelected, setRoomSelected] = useState<string>();
   // Fetch existing bookings for this room
   useEffect(() => {
-    if (roomId) {
+    if (rooms.length > 0) {
       setLoading(true);
-      bookingApi.getByRoomId(roomId)
+      bookingApi.get({
+        roomIds: rooms.map(item => item.id)
+      })
         .then((bookings: IBooking[]) => {
           const bookedSet = new Set<string>();
 
@@ -183,13 +198,23 @@ export const TimeBoxComponent = ({ room, onChange, showPriceTamp, defaultValue =
           activeBookings.forEach(booking => {
             if (booking.details) {
               booking.details.forEach(detail => {
-                const key = `${detail.date}_${detail.time}`;
+                const key = `${booking.roomId}_${detail.date}_${detail.time}`;
                 bookedSet.add(key);
               });
             }
           });
 
-          setBookedSlots(bookedSet);
+          Object.entries(defaultValue).forEach(([roomId, dates]) => {
+            Object.entries(dates).forEach(([date, times]) => {
+              Object.keys(times).forEach(time => {
+                const key = `${roomId}_${date}_${time}`;
+                bookedSet.add(key);
+              })
+            })
+
+          })
+
+          setBookedSlots(bookedSet)
         })
         .catch((err) => {
           console.error('Failed to fetch bookings:', err);
@@ -198,7 +223,13 @@ export const TimeBoxComponent = ({ room, onChange, showPriceTamp, defaultValue =
           setLoading(false);
         });
     }
-  }, [roomId]);
+  }, [rooms, defaultValue]);
+
+  useEffect(() => {
+
+
+  }, [defaultValue])
+
   const handleSave = (row: ITimeBoxItem) => {
     const newData = [...dataSource];
     const index = newData.findIndex((item) => row.key === item.key);
@@ -209,7 +240,7 @@ export const TimeBoxComponent = ({ room, onChange, showPriceTamp, defaultValue =
     });
     setDataSource(newData);
   };
-  const defaultColumns = useColumn({ room, data, save: setData, bookedSlots });
+  const defaultColumns = useColumn({ rooms, data, save: setData, bookedSlots, roomSelected });
 
   const columns = defaultColumns.map((col: any) => {
     if (!col.editable) {
@@ -234,24 +265,37 @@ export const TimeBoxComponent = ({ room, onChange, showPriceTamp, defaultValue =
     },
   };
 
-  const handleBook = (roomId: string) => {
-    router.push(`${path}/${roomId}?data=${JSON.stringify(data)}`, {
-    })
+  const handleBook = (roomId?: string) => {
+    if (!roomId) return;
+    router.push(`${path}/${roomId}?data=${JSON.stringify(data)}`, {})
   }
 
   useEffect(() => {
     if (onChange) {
       onChange(data);
+
     }
-    const { totalPrice, discountPercent } = calulationPrice({ data, roomId })
+    const roomIds = Object.entries(data ?? {}).filter(([_, item]) => {
+      return Object.values(item).reduce((prev, item) => {
+        return prev + Object.values(item).reduce((p, s) => { return p + s }, 0)
+      }, 0)
+    }).map(([key]) => key)
+    let selected: string | undefined;
+    if (roomIds.length > 0) {
+      selected = roomIds[0]
+    } else {
+      selected = undefined;
+    }
+    setRoomSelected(selected)
+    if (!selected) return;
+    const { totalPrice, discountPercent } = calulationPrice({ data, roomId: selected })
     const price = totalPrice - totalPrice * discountPercent / 100;
     setPrice(price)
   }, [data]);
 
   useEffect(() => {
-    setDataSource(dataSourceDefault({ prices }));
-  }, [prices])
-
+    setDataSource(dataSourceDefault({ rooms }));
+  }, [rooms])
 
   return (
     <div>
@@ -295,7 +339,7 @@ export const TimeBoxComponent = ({ room, onChange, showPriceTamp, defaultValue =
                 </div>
               </div>
 
-              <Button className="w-full" variant="solid" color="pink" onClick={() => handleBook(roomId)}>Đặt phòng</Button>
+              <Button className="w-full" variant="solid" color="pink" onClick={() => handleBook(roomSelected)}>Đặt phòng</Button>
 
             </div>
           </div>

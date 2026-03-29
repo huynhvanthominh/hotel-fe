@@ -40,13 +40,8 @@ export default function LocationPage() {
           }
         </div>
         <div className="flex flex-col gap-2">
-          {
-            rooms.map(room => (
-              <div key={room.id}>
-                <TimeBoxComponent room={room} showPriceTamp />
-              </div>
-            ))
-          }
+          <TimeBoxComponent rooms={rooms} showPriceTamp />
+
         </div>
       </div >
 

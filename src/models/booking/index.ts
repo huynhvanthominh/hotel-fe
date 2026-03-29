@@ -43,6 +43,7 @@ export interface IBooking {
   checkOutDate?: string;
   numberOfGuests?: number;
   totalPrice: number | string;
+  totalPriceDiscount?: number | string;
   status: BOOKING_STATUS_ENUM | string;
   specialRequests?: string;
   createdAt?: string;
@@ -88,6 +89,7 @@ export interface ICreateBookingRequest {
   cccdBackImageId: string,
   note: string,
   totalPrice: number,
+  totalPriceDiscount: number,
   roomId: string,
   discountPercent?: number;
   times: IBookingTime[],

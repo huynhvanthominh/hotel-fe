@@ -1,8 +1,15 @@
 import { IBooking, ICreateBookingRequest, IUpdateBookingRequest } from "@/models/booking";
 import axiosClient from "../aixos.config";
 
-const get = async (): Promise<IBooking[]> => {
-  return axiosClient.get('booking/get');
+export class GetBookingDto {
+  roomIds?: string[]
+}
+
+
+const get = async (params: GetBookingDto): Promise<IBooking[]> => {
+  return axiosClient.get('booking/get', {
+    params
+  });
 };
 
 const getById = async (id: string): Promise<IBooking> => {

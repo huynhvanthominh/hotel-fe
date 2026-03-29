@@ -26,10 +26,10 @@ export default function TraCuuPage() {
   };
 
   useEffect(() => {
-    console.log('TraCuuPage mounted. Checking localStorage for bookings...', bookings);
+    console.info('TraCuuPage mounted. Checking localStorage for bookings...', bookings);
     if (bookings) {
       const bookingIds = JSON.parse(bookings);
-      console.log('Parsed booking IDs:', bookingIds);
+      console.info('Parsed booking IDs:', bookingIds);
       if (bookingIds && bookingIds.length > 0) {
         setLoading(true);
         bookingApi.getById(bookingIds[0])
@@ -372,47 +372,28 @@ export default function TraCuuPage() {
                 </div>
               )}
 
+              {
+                (data.details ?? []).length > 1 && (
+                  <div className="flex justify-between items-center">
+                    <span className="">Giảm giá :</span>
+                    <span className="font-semibold text-green-600">
+                      10%
+                    </span>
+                  </div>
+                )
+              }
+
               <div className="border-t-2 border-pink-200 pt-1 lg:pt-2 mt-1 lg:mt-2">
                 <div className="flex justify-between items-center">
                   <span className="text-lg font-semibold">Tổng tiền:</span>
                   <span className="text-2xl font-bold text-pink-600">
-                    {typeof data.totalPrice === 'string'
-                      ? parseFloat(data.totalPrice).toLocaleString('vi-VN')
-                      : data.totalPrice.toLocaleString('vi-VN')}đ
+                    {
+                      +(data.totalPriceDiscount ?? data.totalPrice).toLocaleString('vi-VN')}đ
                   </span>
                 </div>
               </div>
             </div>
           </div>
-
-          {/* CCCD Images */}
-          {/* {(data.cccdFrontImageId || data.cccdBackImageId) && (
-            <div>
-              <h2 className="text-xl font-semibold mb-3">Căn cước công dân</h2>
-              <div className="grid lg:grid-cols-2 gap-4">
-                {data.cccdFrontImageId && (
-                  <div>
-                    <p className="text-sm text-gray-600 mb-2">Mặt trước</p>
-                    <img
-                      src={getUrlFromFileId(data.cccdFrontImageId)}
-                      alt="CCCD mặt trước"
-                      className="w-full rounded border"
-                    />
-                  </div>
-                )}
-                {data.cccdBackImageId && (
-                  <div>
-                    <p className="text-sm text-gray-600 mb-2">Mặt sau</p>
-                    <img
-                      src={getUrlFromFileId(data.cccdBackImageId)}
-                      alt="CCCD mặt sau"
-                      className="w-full rounded border"
-                    />
-                  </div>
-                )}
-              </div>
-            </div>
-          )} */}
 
           {/* Action Buttons */}
           <div className="flex gap-1 lg:gap-4 justify-end pt-1 lg:pt-4">

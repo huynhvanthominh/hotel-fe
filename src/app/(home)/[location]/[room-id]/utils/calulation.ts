@@ -1,5 +1,7 @@
+import { DataItem } from "../components/time-box";
+
 export interface ICalculationParams {
-    data: Record<string, Record<string, number>>,
+    data: DataItem,
     roomId: string,
     servicePrice?: number
 }
@@ -24,7 +26,7 @@ export const calulationPrice = (params: ICalculationParams): {
     const { data, roomId } = params;
     const rs = 0;
     const times: ITime[] = [];
-    Object.entries(data).forEach(([date, timeKey]) => {
+    Object.entries(data[roomId]).forEach(([date, timeKey]) => {
         Object.entries(timeKey).forEach(([time, value]) => {
             if (!value) {
                 return;

@@ -1,27 +1,35 @@
 import { Button, Tooltip } from "antd";
 import { useState } from "react";
+import { DataItem } from "..";
 
 export const ItemRender = (props: {
     dataKey1: string,
     dataKey2: string,
-    data: any,
-    save: (data: any) => void,
+    data: DataItem,
+    save: (data: DataItem) => void,
     isBooked?: boolean,
-    price: number
+    price: number,
+    roomId: string,
+    roomSelected: string | undefined
 }) => {
-    const { dataKey1, dataKey2, data, save, isBooked, price } = props;
+    const { dataKey1, dataKey2, data, save, isBooked, price, roomId, roomSelected } = props;
     const [isSelect, setIsSelect] = useState(false);
+    const isBlock = !!roomSelected && roomId != roomSelected;
+   
     const button = (
         <Button
             onClick={() => {
-                if (isBooked) return;
-                const newData = { ...data };
+                if (isBooked || isBlock) return;
+                let parent = { ...data };
+                const newData = parent[roomId] ?? {};
                 newData[dataKey1] = { ...newData[dataKey1], [dataKey2]: isSelect ? 0 : price };
-                save(newData);
+                parent[roomId] = newData;
+
+                save(parent);
                 setIsSelect(!isSelect);
             }}
             className={`w-full ${isSelect ? '!border-[#E0b0FF]' : '!border-[#C264FF]'} ${isBooked || isSelect ? '' : '!bg-white'}`}
-            disabled={isBooked}
+            disabled={isBooked || isBlock}
 
         ></Button>
     );

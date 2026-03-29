@@ -388,7 +388,7 @@ export default function TraCuuPage() {
                   <span className="text-lg font-semibold">Tổng tiền:</span>
                   <span className="text-2xl font-bold text-pink-600">
                     {
-                      +(data.totalPriceDiscount ?? data.totalPrice).toLocaleString('vi-VN')}đ
+                      (+(data.totalPriceDiscount ?? data.totalPrice)).toLocaleString('vi-VN')}đ
                   </span>
                 </div>
               </div>

@@ -222,7 +222,7 @@ export const TimeBoxComponent = ({ rooms = [], onChange, showPriceTamp, defaultV
           setLoading(false);
         });
     }
-  }, [rooms, defaultValue]);
+  }, [rooms]);
 
   useEffect(() => {
 

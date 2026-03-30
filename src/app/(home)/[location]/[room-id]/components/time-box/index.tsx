@@ -213,7 +213,6 @@ export const TimeBoxComponent = ({ rooms = [], onChange, showPriceTamp, defaultV
             })
 
           })
-
           setBookedSlots(bookedSet)
         })
         .catch((err) => {

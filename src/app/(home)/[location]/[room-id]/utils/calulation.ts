@@ -24,9 +24,8 @@ export const calulationPrice = (params: ICalculationParams): {
     times: ITime[],
 } => {
     const { data, roomId } = params;
-    const rs = 0;
     const times: ITime[] = [];
-    Object.entries(data[roomId]).forEach(([date, timeKey]) => {
+    Object.entries(data[roomId] ?? {}).forEach(([date, timeKey]) => {
         Object.entries(timeKey).forEach(([time, value]) => {
             if (!value) {
                 return;

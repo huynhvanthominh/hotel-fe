@@ -10,6 +10,7 @@ import { BOOKING_STATUS_ENUM } from '@/enums/booking-status.enum';
 import { useColumn } from './hooks/use-column';
 import { calulationPrice } from '../../utils/calulation';
 import { usePathname, useRouter } from 'next/navigation';
+import { adminBookingApi } from '@/api/admin-booking';
 dayjs.locale('vi');
 
 type FormInstance<T> = GetRef<typeof Form<T>>;
@@ -179,49 +180,57 @@ export const TimeBoxComponent = ({ rooms = [], onChange, showPriceTamp, defaultV
   const [loading, setLoading] = useState(false);
   const [price, setPrice] = useState(0);
   const [roomSelected, setRoomSelected] = useState<string>();
-  // Fetch existing bookings for this room
-  useEffect(() => {
+  const fetch = async () => {
     if (rooms.length > 0) {
       setLoading(true);
-      bookingApi.get({
-        roomIds: rooms.map(item => item.id)
-      })
-        .then((bookings: IBooking[]) => {
-          const bookedSet = new Set<string>();
+      const bookedSet = new Set<string>();
+      const roomIds = rooms.map(item => item.id);
+      const [adminBookings, userBookings] = await Promise.all([
+        adminBookingApi.get({
+          roomIds
+        }),
+        bookingApi.get({
+          roomIds
+        })
+      ])
 
-          // Only consider confirmed and pending bookings
-          const activeBookings = bookings.filter(b => {
-            return [BOOKING_STATUS_ENUM.PENDING, BOOKING_STATUS_ENUM.SUCCESS].includes(b.status as BOOKING_STATUS_ENUM);
-          }
-          );
+      // Only consider confirmed and pending bookings
+      const activeBookings = userBookings.filter(b => {
+        return [BOOKING_STATUS_ENUM.PENDING, BOOKING_STATUS_ENUM.SUCCESS].includes(b.status as BOOKING_STATUS_ENUM);
+      });
 
-          activeBookings.forEach(booking => {
-            if (booking.details) {
-              booking.details.forEach(detail => {
-                const key = `${booking.roomId}_${detail.date}_${detail.time}`;
-                bookedSet.add(key);
-              });
-            }
+      activeBookings.forEach(booking => {
+        if (booking.details) {
+          booking.details.forEach(detail => {
+            const key = `${booking.roomId}_${detail.date}_${detail.time}`;
+            bookedSet.add(key);
           });
+        }
+      });
 
-          Object.entries(defaultValue).forEach(([roomId, dates]) => {
-            Object.entries(dates).forEach(([date, times]) => {
-              Object.keys(times).forEach(time => {
-                const key = `${roomId}_${date}_${time}`;
-                bookedSet.add(key);
-              })
-            })
+      adminBookings.forEach(booking => {
+        const key = `${booking.roomId}_${booking.date}_${booking.time}`;
+        bookedSet.add(key);
+      })
 
+
+      Object.entries(defaultValue).forEach(([roomId, dates]) => {
+        Object.entries(dates).forEach(([date, times]) => {
+          Object.keys(times).forEach(time => {
+            const key = `${roomId}_${date}_${time}`;
+            bookedSet.add(key);
           })
-          setBookedSlots(bookedSet)
         })
-        .catch((err) => {
-          console.error('Failed to fetch bookings:', err);
-        })
-        .finally(() => {
-          setLoading(false);
-        });
+
+      })
+      setBookedSlots(bookedSet)
+      setLoading(false);
     }
+
+  }
+  // Fetch existing bookings for this room
+  useEffect(() => {
+    fetch().then();
   }, [rooms]);
 
   useEffect(() => {

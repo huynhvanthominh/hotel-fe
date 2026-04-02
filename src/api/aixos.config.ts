@@ -4,6 +4,9 @@ const axiosClient = axios.create({
   baseURL: '/api', // dùng rewrite
   withCredentials: true,
   timeout: 10000,
+  paramsSerializer: {
+    indexes: null,
+  },
 })
 
 axiosClient.interceptors.response.use(

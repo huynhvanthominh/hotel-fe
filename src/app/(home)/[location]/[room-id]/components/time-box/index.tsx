@@ -3,7 +3,7 @@ import { Button, Checkbox, Form, Table, Tooltip } from 'antd';
 import type { GetRef, InputRef, TableColumnsType } from 'antd';
 import dayjs from 'dayjs';
 import 'dayjs/locale/vi';
-import { IRoom, IRoomPrice } from '@/models/room';
+import { type IRoom, IRoomPrice } from '@/models/room';
 import { bookingApi } from '@/api/booking';
 import { type IBooking } from '@/models/booking';
 import { BOOKING_STATUS_ENUM } from '@/enums/booking-status.enum';
@@ -27,8 +27,10 @@ export interface ITimeBoxItem {
 }
 
 
-
-const start = dayjs();
+const now = dayjs();
+const start = now.hour() < 6
+  ? now.subtract(1, 'day')
+  : now;
 const end = dayjs().add(1, 'month');
 
 
